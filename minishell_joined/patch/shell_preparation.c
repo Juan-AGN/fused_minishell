@@ -21,7 +21,7 @@ t_env	*ft_dup_env(char *name)
 	raw_content = getenv(name);
 	if (raw_content != NULL)
 	{
-		dupped = ft_strndup(raw_content, ft_strlen(raw_content));
+		dupped = ft_strdup(raw_content);
 		if (dupped == NULL)
 			return (NULL);
 	}
@@ -82,18 +82,12 @@ char	*ft_get_env(char *str)
 	int	i;
 	char	*toreturn;
 
-	i = ft_strlen(str) - ft_strlen(ft_strchr(str, '=') - 1);
+	i = ft_strlen(str) - ft_strlen(ft_strchr(str, '='));
 	if (i == -1)
 		return (NULL);
-	toreturn = malloc((i + 1) * sizeof(char));
+	toreturn = ft_strndup(str, i);
 	if (toreturn == NULL)
 		return (NULL);
-	toreturn[i] = '\0';
-	while (i != -1)
-	{
-		toreturn[i] = str[i];
-		i --;
-	}
 	return (toreturn);
 }
 
@@ -104,7 +98,7 @@ t_shell		*ft_prepare_values(char **envp)
 	minishell = malloc(sizeof(t_shell));
 	if (minishell == NULL)
 		return (NULL);
-	minishell->env = malloc(sizeof(t_env *));
+	minishell->env = malloc(sizeof(t_env *) * ft_count_env(envp));
 	if (ft_prep_env(envp, minishell) == -1)
 		return (ft_mass_free(minishell, minishell->token, NULL, NULL));
 	return (minishell);

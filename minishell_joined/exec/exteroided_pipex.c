@@ -43,7 +43,112 @@ que hay que cambiar el handle_tofile y handle_fromfile
 
 */
 
+void	handle_tofile(int pipes[][2], t_token *token, int current, int ncomands)
+{
+	int i;
+	int	fileout;
+	int shit;
+	char *chain;
 
+	fileout = -1;
+	i = 0;
+	shit = -1;
+	if (token->noutfiles == 0 && current != ncomands)
+		dup2(pipes[current][1], STDOUT_FILENO);
+	while (i < token->noutfiles)
+	{
+		chain = exec_ft_substr(token->outfiles[i], 3, exec_ft_strlen(token->outfiles[i]) - 3);
+		if ((exec_ft_strncmp(token->outfiles[i], ">>", 2)) == 0)
+			fileout = open(chain, O_WRONLY | O_CREAT
+					| O_APPEND, 0644);
+		else
+			fileout = open(chain, O_WRONLY | O_CREAT
+					| O_TRUNC, 0644);
+		if (fileout < 0)
+		{
+			shit = i;
+			perror("error file");
+		}
+		free(chain);
+		i++;
+	}
+	if (shit != i)
+	{
+		dup2(fileout, STDOUT_FILENO);
+		close(fileout);
+		if (current != ncomands) //la clave a ver
+			close(pipes[current][1]);
+	}
+}
+
+void	handle_fromfile(int pipes[][2], t_token *token, int current)
+{
+	int i;
+	int		pipefd[2];
+	int		filein;
+	int		shit;
+	char *chain;
+
+	filein = -1;
+	i = 0;
+	shit = 0;
+	if (token->ninfiles == 0 && current != 0)
+		dup2(pipes[current - 1][0], STDIN_FILENO);
+	while (i < token->ninfiles)
+	{
+		chain = exec_ft_substr(token->infiles[i], 3, exec_ft_strlen(token->infiles[i]) - 3);
+		if ((exec_ft_strncmp(token->infiles[i], "<<", 2)) != 0)
+		{
+			filein = open(chain, O_RDONLY);
+			if (filein < 0)
+			{
+				perror("error file");
+				shit = 1;
+			}
+			else
+				shit = 0;
+		}
+		else
+		{
+			shit = 2;
+			here_doc_child(chain, pipes[current][1]);
+		}
+		free(chain);
+		i++;
+	}
+	if (shit == 1)
+	{
+		if (pipe(pipefd) < 0)
+		{
+			perror("Error creating pipe");
+			exit(EXIT_FAILURE);
+		}
+		close(pipefd[1]);
+		filein = pipefd[0];
+		dup2(filein, STDIN_FILENO);
+		close(filein);
+	}
+	else if (shit == 0)
+	{
+		dup2(filein, STDIN_FILENO);
+		close(filein);
+	}
+}
+
+void	redirect(int pipes[][2], t_token *token, int current, int ncomands)
+{
+	int	i;
+
+	i = 0;
+	handle_fromfile(pipes, token, current);
+	handle_tofile(pipes, token, current, ncomands);
+	while (i < ncomands - 1)
+	{
+		close(pipes[i][0]);
+		close(pipes[i][1]);
+		i++;
+	}
+}
 
 void	run(t_shell *shell, char **directories, char **envp)
 {
@@ -79,11 +184,11 @@ void    handle_shell(t_shell *shell)
 
     if (shell->ncomands == 0)
         return;
-    envp = convert_env_to_array(shell);
+    envp = exec_convert_env_to_array(shell);
     if (!envp)
     {
         perror("malloc error");
-        return
+        return;
     }
     if (shell->ncomands == 1 && is_builtin(shell->token[0].command))
     {
@@ -96,7 +201,7 @@ void    handle_shell(t_shell *shell)
 	{
         free_array(envp);
 		perror("malloc error");
-		return
+		return;
 	}
 	run(shell, directories, envp);
 }
