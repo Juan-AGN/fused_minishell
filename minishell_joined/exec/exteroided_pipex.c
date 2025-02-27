@@ -43,19 +43,60 @@ que hay que cambiar el handle_tofile y handle_fromfile
 
 */
 
+
+
+void	run(t_shell *shell, char **directories, char **envp)
+{
+	int		(*pipes)[2];
+	pid_t	pid;
+	int		i;
+
+	pipes = malloc(sizeof(int [2]) * (shell->ncomands - 1));
+	if (!pipes)
+	{
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
+	i = 0;
+	create_pipes(pipes, shell->ncomands);
+	pid = forking(pipes, shell, directories, envp);
+	free_array(directories);
+    free_array(envp);
+	while (i < shell->ncomands - 1)
+	{
+		close(pipes[i][0]);
+		close(pipes[i][1]);
+		i++;
+	}
+	free(pipes);
+	returning(shell->ncomands, pid);
+}
+
 void    handle_shell(t_shell *shell) 
 {
-    int i;
+    char	**directories;
+    char **envp;
 
-    i = 0;
     if (shell->ncomands == 0)
         return;
+    envp = convert_env_to_array(shell);
+    if (!envp)
+    {
+        perror("malloc error");
+        return
+    }
     if (shell->ncomands == 1 && is_builtin(shell->token[0].command))
     {
         execute_builtin(shell->token /*,shell->env*/);
+        free_array(envp);
         return;
     }
-        //useof find directories
-        //runing, 
-
+	directories = find_directories(envp);
+	if (!directories)
+	{
+        free_array(envp);
+		perror("malloc error");
+		return
+	}
+	run(shell, directories, envp);
 }

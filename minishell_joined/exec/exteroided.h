@@ -29,6 +29,10 @@ typedef struct t_token
 }	t_token;
 
 void    handle_shell(t_shell *shell);
-
+size_t	exec_ft_strlen(const char *s);
+size_t	exec_ft_strlcat(char *dst, const char *src, size_t size);
+void	exec_free_array(char **directories);
+char **exec_convert_env_to_array(t_shell *shell);
+void	exec_create_pipes(int pipes[][2], int ncom);
 
 #endif
