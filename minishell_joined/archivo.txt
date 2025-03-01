@@ -1,0 +1,17 @@
+a
+archivo.txt
+aux
+copia.txt
+exec
+include
+infile
+libft
+list
+lista_txt.txt
+Makefile
+minishell
+outfile
+output.txt
+patch
+todelete
+tokens

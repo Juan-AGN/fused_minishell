@@ -20,6 +20,8 @@ int main(int argc, char **argv, char **envp)
 
 	if(!envp[0])
 		return 1;
+	(void)argc;
+	(void)argv;
 /* hay que tener en cuenta que tendriamos que imprimir tambien el nombre de
 usuario y de la maquina como lo hace la prompt original para eso hay que
 coger variables del PATH y otras cosas, ademas hay que ver cuando se imprime

@@ -30,7 +30,7 @@ all: $(NAME)
 
 $(NAME): $(OBJ) $(EXEC_OBJ) $(LIBFT)
 	$(MAKE) -C libft
-	cc $(FLAGS) -g -lreadline $(OBJ) $(EXEC_OBJ) $(LIBFT) -o $(NAME)
+	cc $(FLAGS) $(OBJ) $(EXEC_OBJ) $(LIBFT) -o $(NAME) -lreadline -lncurses
 
 $(OBJ): %.o:%.c
 	clang -c $(FLAGS) $^ -o $@

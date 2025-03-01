@@ -229,7 +229,7 @@ char	*build_full_path(const char *directory, const char *command)
 	return (full_path);
 }
 
-void	returning(int ncom, pid_t pid)
+int	returning(int ncom, pid_t pid)
 {
 	int	i;
 	int	wpid;
@@ -254,7 +254,8 @@ void	returning(int ncom, pid_t pid)
 		}
 		i++;
 	}
-	exit(exit_code);
+	//exit(exit_code);
+	return (exit_code);
 }
 
 

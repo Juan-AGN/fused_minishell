@@ -18,6 +18,7 @@ typedef struct t_shell
 	struct t_env	**env;
 	struct t_token	*token;
 	int				ncomands;
+	int 			exit_code;
 }	t_shell;
 
 typedef struct t_env
@@ -46,7 +47,7 @@ char **exec_convert_env_to_array(t_shell *shell);
 void	create_pipes(int pipes[][2], int ncom);
 char	**exec_split(char const *s, char c);
 pid_t	forking(int pipes[][2], t_shell *shell, char **directories, char **envp);
-void	returning(int ncom, pid_t pid);
+int	returning(int ncom, pid_t pid);
 char	**find_directories(char **envp);
 void	redirect(int pipes[][2], t_token *token, int current, int ncomands);
 void	execute(char *command, char **directories, char **envp);

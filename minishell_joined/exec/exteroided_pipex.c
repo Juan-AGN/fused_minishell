@@ -53,7 +53,7 @@ void	handle_tofile(int pipes[][2], t_token *token, int current, int ncomands)
 	fileout = -1;
 	i = 0;
 	shit = -1;
-	if (token->noutfiles == 0 && current != ncomands)
+	if (token->noutfiles == 0 && current < ncomands - 1)
 		dup2(pipes[current][1], STDOUT_FILENO);
 	while (i < token->noutfiles)
 	{
@@ -76,7 +76,7 @@ void	handle_tofile(int pipes[][2], t_token *token, int current, int ncomands)
 	{
 		dup2(fileout, STDOUT_FILENO);
 		close(fileout);
-		if (current != ncomands) //la clave a ver
+		if (current < ncomands - 1) //la clave a ver
 			close(pipes[current][1]);
 	}
 }
@@ -88,11 +88,12 @@ void	handle_fromfile(int pipes[][2], t_token *token, int current)
 	int		filein;
 	int		shit;
 	char *chain;
+	int		pipe_heredoc[2];
 
 	filein = -1;
 	i = 0;
-	shit = 0;
-	if (token->ninfiles == 0 && current != 0)
+	shit = -1;
+	if (token->ninfiles == 0 && current > 0)
 		dup2(pipes[current - 1][0], STDIN_FILENO);
 	while (i < token->ninfiles)
 	{
@@ -110,8 +111,14 @@ void	handle_fromfile(int pipes[][2], t_token *token, int current)
 		}
 		else
 		{
+			if (pipe(pipe_heredoc) < 0)
+            {
+                perror("Error creating heredoc pipe");
+                exit(EXIT_FAILURE);
+            }
 			shit = 2;
-			here_doc_child(chain, pipes[current][1]);
+			here_doc_child(chain, pipe_heredoc[1]);
+			close(pipe_heredoc[1]);
 		}
 		free(chain);
 		i++;
@@ -132,6 +139,11 @@ void	handle_fromfile(int pipes[][2], t_token *token, int current)
 	{
 		dup2(filein, STDIN_FILENO);
 		close(filein);
+	}
+	else if (shit == 2)
+	{
+		dup2(pipe_heredoc[0], STDIN_FILENO);
+		close(pipe_heredoc[0]); 
 	}
 }
 
@@ -174,7 +186,7 @@ void	run(t_shell *shell, char **directories, char **envp)
 		i++;
 	}
 	free(pipes);
-	returning(shell->ncomands, pid);
+	shell->exit_code = returning(shell->ncomands, pid);
 }
 
 void    handle_shell(t_shell *shell) 

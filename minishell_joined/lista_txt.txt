@@ -1,0 +1,3 @@
+-rw-r--r-- 1 luialvar luialvar    38 Feb 28 12:35 copia.txt
+-rw-r--r-- 1 luialvar luialvar     0 Feb 28 12:36 lista_txt.txt
+-rw-rw-r-- 1 luialvar luialvar    38 Feb 28 12:34 output.txt
