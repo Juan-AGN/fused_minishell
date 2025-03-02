@@ -1,6 +1,6 @@
 #include "exteroided.h"
 
-void	execute_builtin(t_token   *command/*, t_env **envp*/)
+void	execute_builtin(t_token   *command, char ** envp/*, t_env **envp*/)
 {
 	if (ft_strrncmp(command->command, "echo\0", 5) == 0)
 		builtin_echo(command->params);
@@ -8,8 +8,8 @@ void	execute_builtin(t_token   *command/*, t_env **envp*/)
 		builtin_cd(command->params);
     else if (ft_strrncmp(command->command, "pwd\0", 4) == 0)
 		builtin_pwd();
-	//else if (ft_strrncmp(command->command, "env\0", 4) == 0)
-	//	builtin_env(envp);
+	else if (ft_strrncmp(command->command, "env\0", 4) == 0)
+		builtin_env(envp);
 	else if (ft_strrncmp(command->command, "exit\0", 5) == 0)
 		builtin_exit(command->params);
 	//else if (ft_strrncmp(command->command, "unset\0", 6) == 0)
@@ -190,6 +190,11 @@ void	run(t_shell *shell, char **directories, char **envp)
 	free(shell->exit_code);
 	exit_code = returning(shell->ncomands, pid);
 	shell->exit_code = ft_itoa(exit_code);
+	if (!shell->exit_code)
+	{
+        perror("malloc error");
+        return;
+    }
 }
 
 void    handle_shell(t_shell *shell) 
@@ -207,7 +212,7 @@ void    handle_shell(t_shell *shell)
     }
     if (shell->ncomands == 1 && is_builtin(shell->token[0].command))
     {
-        execute_builtin(shell->token /*,shell->env*/);
+        execute_builtin(shell->token, envp /*,shell->env*/);
         free_array(envp);
         return;
     }

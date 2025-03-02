@@ -53,7 +53,7 @@ void	redirect(int pipes[][2], t_token *token, int current, int ncomands);
 void	execute(char *command, char **directories, char **envp);
 char	*build_full_path(const char *directory, const char *command);
 size_t	exec_ft_strlcpy(char *restrict dst, const char *restrict src, size_t size);
-int	exec_ft_strncmp(const char *s1, const char *s2, size_t n);
+int		exec_ft_strncmp(const char *s1, const char *s2, size_t n);
 void	*exec_ft_memcpy(void *dest, const void *src, size_t n);
 void	here_doc_child(char *limiter, int fd);
 char	*exec_ft_substr(char const *s, unsigned int start, size_t len);

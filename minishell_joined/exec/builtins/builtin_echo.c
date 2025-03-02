@@ -3,13 +3,13 @@
 void	builtin_echo(char **args)
 {
 	int		i;
-	int	no_newline;
+	int		newline;
 
 	i = 0;
-	no_newline = 0;
+	newline = 1;
 	if (args[i] && ft_strrncmp(args[i], "-n", 2) == 0)
 	{
-		no_newline = 1;
+		newline = 0;
 		i++;
 	}
 	while (args[i])
@@ -19,6 +19,6 @@ void	builtin_echo(char **args)
 			write(1, " ", 1);
 		i++;
 	}
-	if (!no_newline)
+	if (newline)
 		write(1, "\n", 1);
 }

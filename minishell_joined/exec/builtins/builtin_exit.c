@@ -19,7 +19,7 @@ void builtin_exit(char **args) {
 	int exit_code = 0;
 
 	write(STDOUT_FILENO, "exit\n", 5);
-	if (!args[0]) 
+	if (!args) 
 		exit(0);
 	if (is_numeric(args[0])) 
 		exit_code = ft_aatoi(args[0]) % 256;
