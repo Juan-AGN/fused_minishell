@@ -18,7 +18,7 @@ typedef struct t_shell
 	struct t_env	**env;
 	struct t_token	*token;
 	int				ncomands;
-	int 			exit_code;
+	char 			*exit_code;
 }	t_shell;
 
 typedef struct t_env
@@ -61,5 +61,6 @@ char	*exec_ft_strdup(const char *s1);
 char	*exec_ft_strchr(const char *s, int c);
 char	*exec_ft_strjoin(char const *s1, char const *s2);
 char	*exec_get_next_line(int fd);
+char	*ft_itoa(int n);
 
 #endif
