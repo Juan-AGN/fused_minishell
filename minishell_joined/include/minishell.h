@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 11:57:54 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/02/25 17:28:44 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/02 12:51:20 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ typedef struct t_shell
 	struct t_env	**env;
 	struct t_token	*token;
 	int				ncomands;
+	char			*exit_code;
 }	t_shell;
 
 typedef struct t_env
@@ -65,7 +66,7 @@ void		ft_plstadd_back(t_env **lst, t_env *new);
 
 t_env		*ft_lstadvance(t_env *lst, int i);
 
-char		*ft_plstsearch(t_env *lst, char *name);
+char		*ft_plstsearch(t_env *lst, char *name, t_shell *minishell);
 //end list
 
 //free
