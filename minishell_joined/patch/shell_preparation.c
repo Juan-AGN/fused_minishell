@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 16:23:02 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/02/25 17:37:02 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/02 14:51:39 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,16 @@ t_shell		*ft_prepare_values(char **envp)
 	if (minishell == NULL)
 		return (NULL);
 	minishell->env = malloc(sizeof(t_env *) * ft_count_env(envp));
+	if (minishell->env == NULL)
+		return (ft_mass_free(minishell, NULL, NULL, NULL));
 	if (ft_prep_env(envp, minishell) == -1)
 		return (ft_mass_free(minishell, minishell->token, NULL, NULL));
+	minishell->exit_code = ft_itoa(0);
+	if (minishell->exit_code == NULL)
+	{
+		ft_plstclear(minishell->env);
+		return (ft_mass_free(minishell, minishell->token,
+				minishell->env, NULL));
+	}
 	return (minishell);
 }
