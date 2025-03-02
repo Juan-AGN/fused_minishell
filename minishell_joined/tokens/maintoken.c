@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:41:23 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/02/25 17:43:17 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/01 12:32:09 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,14 +71,8 @@ int	ft_alloctoken(int i, t_shell *minishell)
 	return (1);
 }
 
-int	ft_maintoken(t_shell *minishell, char *input)
+int	ft_maintoken_loop(t_shell *minishell, char *input, int i, int u)
 {
-	int	i;
-	int	u;
-
-	i = 0;
-	u = 0;
-	ft_alloctoken(ft_comands(input), minishell);
 	while (input[i] != '\0')
 	{
 		if (ft_spcharparams_if(input[i]) == 0)
@@ -96,6 +90,15 @@ int	ft_maintoken(t_shell *minishell, char *input)
 		}
 	}
 	if (minishell->token[u].command == NULL)
-		return (ft_printf("error\n"));
+		return (ft_printf("Error\n"));
 	return (0);
+}
+
+int	ft_maintoken(t_shell *minishell, char *input)
+{
+	printf("%i\n", ft_comands(input));
+	if (ft_comands(input) == 0)
+		return (1);
+	ft_alloctoken(ft_comands(input), minishell);
+	return (ft_maintoken_loop(minishell, input, 0, 0));
 }

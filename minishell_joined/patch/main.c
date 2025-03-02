@@ -17,6 +17,7 @@ int main(int argc, char **argv, char **envp)
 	char	*input;
 	char	*cwd = NULL;
 	t_shell	*minishell;
+	int ret;
 
 	if(!envp[0])
 		return 1;
@@ -58,8 +59,11 @@ el $ y cuando el # cuando este en modo administrador, esto es solo una aprox*/
 			add_history(input);
 		else
 			printf("");
-		ft_maintoken(minishell, input);
-		handle_shell(minishell);
+		ret = ft_maintoken(minishell, input);
+		if (input != NULL && ret == 0)
+		{
+			handle_shell(minishell);
+		}
 		/*
 		if (input[0] != 'e' && input[1] != 'x')
 		{
