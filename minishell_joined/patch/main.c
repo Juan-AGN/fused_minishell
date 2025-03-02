@@ -21,8 +21,6 @@ int main(int argc, char **argv, char **envp)
 
 	if(!envp[0])
 		return 1;
-	(void)argc;
-	(void)argv;
 	minishell = ft_prepare_values(envp);
 	rl_redisplay();
 	argc = 0;
@@ -38,13 +36,6 @@ int main(int argc, char **argv, char **envp)
 			free(cwd);
 			perror("getcwd() error");
 			return 1;
-		}
-		if (ft_strncmp(input, "exit\0", 5) == 0)
-		{
-			free(input);
-			free(cwd);
-			rl_clear_history();
-			break;
 		}
 		if (ft_search_space(input) == 0)
 			add_history(input);
