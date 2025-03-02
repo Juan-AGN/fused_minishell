@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 10:31:23 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/01/29 16:46:06 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/02 12:42:34 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ char	*ft_strjoinenv(t_shell *minishell, char *tojoin, char *env)
 {
 	char	*env_content;
 
-	env_content = ft_plstsearch(minishell->env[0], env);
+	env_content = ft_plstsearch(minishell->env[0], env, minishell);
 	free(env);
 	return (ft_strjoin(tojoin, env_content));
 }
