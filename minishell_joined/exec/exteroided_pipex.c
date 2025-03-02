@@ -167,6 +167,7 @@ void	run(t_shell *shell, char **directories, char **envp)
 	int		(*pipes)[2];
 	pid_t	pid;
 	int		i;
+	int		exit_code;
 
 	pipes = malloc(sizeof(int [2]) * (shell->ncomands - 1));
 	if (!pipes)
@@ -186,7 +187,9 @@ void	run(t_shell *shell, char **directories, char **envp)
 		i++;
 	}
 	free(pipes);
-	shell->exit_code = returning(shell->ncomands, pid);
+	free(shell->exit_code);
+	exit_code = returning(shell->ncomands, pid);
+	shell->exit_code = ft_itoa(exit_code);
 }
 
 void    handle_shell(t_shell *shell) 
