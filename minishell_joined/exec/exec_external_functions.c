@@ -218,7 +218,40 @@ char	*build_full_path(const char *directory, const char *command)
 {
 	size_t	total_size;
 	char	*full_path;
+	char	*cwd;
 
+	// Si command ya es una ruta absoluta, se copia directamente
+	if (command[0] == '/')
+	{
+		full_path = malloc(exec_ft_strlen(command) + 1);
+		if (!full_path)
+			return (NULL);
+		exec_ft_strlcpy(full_path, command, exec_ft_strlen(command) + 1);
+		return (full_path);
+	}
+
+	// Si es una ruta relativa con "./" o "../", convertirla a absoluta
+	if (command[0] == '.' && (command[1] == '/' || command[1] == '.'))
+	{
+		cwd = getcwd(NULL, 0);  // getcwd asigna memoria automáticamente
+		if (!cwd)
+		{
+			perror("getcwd");
+			return (NULL);
+		}
+		total_size = exec_ft_strlen(cwd) + exec_ft_strlen(command) + 2;
+		full_path = malloc(total_size);
+		if (!full_path)
+		{
+			free(cwd);
+			return (NULL);
+		}
+		exec_ft_strlcpy(full_path, cwd, total_size);
+		exec_ft_strlcat(full_path, "/", total_size);
+		exec_ft_strlcat(full_path, command, total_size);
+		free(cwd);
+		return (full_path);
+	}
 	total_size = exec_ft_strlen(directory) + exec_ft_strlen(command) + 2;
 	full_path = malloc(total_size);
 	if (!full_path)
