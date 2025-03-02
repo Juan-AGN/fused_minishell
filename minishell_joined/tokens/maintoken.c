@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:41:23 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/02 12:19:25 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/02 18:29:53 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,13 +83,17 @@ int	ft_maintoken_loop(t_shell *minishell, char *input, int i, int u)
 			i = ft_in_out(minishell, &minishell->token[u], input, i);
 		if (input[i] == '|')
 		{
-			if (minishell->token[u].command == NULL)
+			if (minishell->token[u].command == NULL
+				&& minishell->token[u].infiles == NULL
+				&& minishell->token[u].outfiles == NULL)
 				return (ft_printf("Error\n"));
 			u ++;
 			i ++;
 		}
 	}
-	if (minishell->token[u].command == NULL)
+	if (minishell->token[u].command == NULL
+		&& minishell->token[u].infiles == NULL
+		&& minishell->token[u].outfiles == NULL)
 		return (ft_printf("Error\n"));
 	return (0);
 }

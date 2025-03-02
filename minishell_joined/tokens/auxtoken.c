@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:41:23 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/01 12:28:33 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/02 18:19:29 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int	ft_comands(char *input)
 	{
 		while (input[i] <= 32 && input[i] >= 1)
 			i ++;
-		if (u == 0 && ft_specialchar_if(input[i]) == 0)
+		if (u == 0 && input[i] > 32)
 			u ++;
 		i += ft_count_token(&input[i]);
 		i += ft_count_inout(&input[i]);
