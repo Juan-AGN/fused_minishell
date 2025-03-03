@@ -124,6 +124,11 @@ pid_t	forking(int pipes[][2], t_shell *shell, char **directories, char **envp)
 			{
 				chain = token_to_str(&(shell->token[i]));
 				redirect(pipes, &(shell->token[i]), i, shell->ncomands);
+				if (is_builtin(shell->token[i].command))
+				{
+					execute_builtin(&(shell->token[i]), envp, shell->env);
+					exit(EXIT_SUCCESS);
+				}
 				execute(chain, directories, envp);
 			}
 		}

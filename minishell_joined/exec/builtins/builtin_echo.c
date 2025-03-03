@@ -1,21 +1,21 @@
 #include "builtins.h"
 
-void	builtin_echo(char **args)
+void	builtin_echo(t_token *command)
 {
 	int		i;
 	int		newline;
 
 	i = 0;
 	newline = 1;
-	if (args[i] && ft_strrncmp(args[i], "-n", 2) == 0)
+	if (command->params[i] && ft_strrncmp(command->params[i], "-n", 2) == 0)
 	{
 		newline = 0;
 		i++;
 	}
-	while (args[i])
+	while (i < command->nparams)
 	{
-		write(1, args[i], ft_strrlen(args[i]));
-		if (args[i + 1])
+		write(1, command->params[i], ft_strrlen(command->params[i]));
+		if (command->params[i + 1])
 			write(1, " ", 1);
 		i++;
 	}

@@ -34,7 +34,7 @@ typedef struct t_token
 	char			**outfiles;
 }	t_token;
 
-void	builtin_echo(char **args);
+void	builtin_echo(t_token *command);
 void	builtin_cd(char **args);
 size_t	ft_strrlen(const char *s);
 int     ft_strrncmp(const char *s1, const char *s2, size_t n);
@@ -47,6 +47,6 @@ void builtin_exit(char **args) ;
 int	ft_aatoi(const char *nptr);
 int	ft_iisdigit(int c);
 void	builtin_unset(t_token *command, t_env **env);
-void	builtin_export(char **args, char ***envp);
+void	builtin_export(t_token   *command, t_env **env);
 
 #endif

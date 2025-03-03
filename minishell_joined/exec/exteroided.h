@@ -23,7 +23,7 @@ char	**exec_split(char const *s, char c);
 pid_t	forking(int pipes[][2], t_shell *shell, char **directories, char **envp);
 int	returning(int ncom, pid_t pid);
 char	**find_directories(char **envp);
-void	redirect(int pipes[][2], t_token *token, int current, int ncomands);
+void		redirect(int pipes[][2], t_token *token, int current, int ncomands);
 void	execute(char *command, char **directories, char **envp);
 char	*build_full_path(const char *directory, const char *command);
 size_t	exec_ft_strlcpy(char *restrict dst, const char *restrict src, size_t size);
@@ -36,5 +36,7 @@ char	*exec_ft_strchr(const char *s, int c);
 char	*exec_ft_strjoin(char const *s1, char const *s2);
 char	*exec_get_next_line(int fd);
 char	*ft_itoa(int n);
+int is_builtin(char *builtin);
+void	execute_builtin(t_token   *command, char ** envp, t_env **env);
 
 #endif

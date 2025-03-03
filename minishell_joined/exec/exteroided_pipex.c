@@ -3,7 +3,7 @@
 void	execute_builtin(t_token   *command, char ** envp, t_env **env)
 {
 	if (ft_strrncmp(command->command, "echo\0", 5) == 0)
-		builtin_echo(command->params);
+		builtin_echo(command);
     else if (ft_strrncmp(command->command, "cd\0", 3) == 0)
 		builtin_cd(command->params);
     else if (ft_strrncmp(command->command, "pwd\0", 4) == 0)
@@ -14,8 +14,8 @@ void	execute_builtin(t_token   *command, char ** envp, t_env **env)
 		builtin_exit(command->params);
 	else if (ft_strrncmp(command->command, "unset\0", 6) == 0)
 		builtin_unset(command, env);
-	//else if (ft_strrncmp(command->command, "export\0", 7) == 0)
-	//	builtin_export(command->params, envp);
+	else if (ft_strrncmp(command->command, "export\0", 7) == 0)
+		builtin_export(command, env);
         return;
 }
 
