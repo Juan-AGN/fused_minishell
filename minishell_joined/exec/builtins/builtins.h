@@ -15,6 +15,25 @@ typedef struct t_env
 	struct t_env	*next;
 }	t_env;
 
+typedef struct t_shell
+{
+	struct t_env	**env;
+	struct t_token	*token;
+	int				ncomands;
+	char 			*exit_code;
+}	t_shell;
+
+typedef struct t_token
+{
+	char			*command;
+	int				nparams;
+	int				ninfiles;
+	int				noutfiles;
+	char			**params;
+	char			**infiles;
+	char			**outfiles;
+}	t_token;
+
 void	builtin_echo(char **args);
 void	builtin_cd(char **args);
 size_t	ft_strrlen(const char *s);
@@ -27,7 +46,7 @@ void	free_array(char **directories);
 void builtin_exit(char **args) ;
 int	ft_aatoi(const char *nptr);
 int	ft_iisdigit(int c);
-void	builtin_unset(char **args, t_env **env);
+void	builtin_unset(t_token *command, t_env **env);
 void	builtin_export(char **args, char ***envp);
 
 #endif

@@ -33,16 +33,14 @@ void	remove_from_env(char *key, t_env **env)
 	}
 }
 // Implementación del comando unset
-void	builtin_unset(char **args, t_env **env)
+void	builtin_unset(t_token *command, t_env **env)
 {
 	int	i;
 
-	if (!args || !env || !*args)
-		return ;
 	i = 0;
-    while (args[i] != NULL)
+    while (i < command->nparams)
 	{
-		remove_from_env(args[i], env);
+		remove_from_env(command->params[i], env);
 		i++;
 	}
 }

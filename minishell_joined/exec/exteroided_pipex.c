@@ -13,7 +13,7 @@ void	execute_builtin(t_token   *command, char ** envp, t_env **env)
 	else if (ft_strrncmp(command->command, "exit\0", 5) == 0)
 		builtin_exit(command->params);
 	else if (ft_strrncmp(command->command, "unset\0", 6) == 0)
-		builtin_unset(command->params, env);
+		builtin_unset(command, env);
 	//else if (ft_strrncmp(command->command, "export\0", 7) == 0)
 	//	builtin_export(command->params, envp);
         return;
@@ -210,8 +210,8 @@ void    handle_shell(t_shell *shell)
         perror("malloc error");
         return;
     }
-    if (shell->ncomands == 1 && is_builtin(shell->token[0].command))
-    {
+	if (shell->ncomands == 1 && shell->token[0].command != NULL && is_builtin(shell->token[0].command))
+	{
         execute_builtin(shell->token, envp ,shell->env);
         free_array(envp);
         return;

@@ -13,25 +13,6 @@
 #  define BUFFER_SIZE 42
 # endif
 
-typedef struct t_shell
-{
-	struct t_env	**env;
-	struct t_token	*token;
-	int				ncomands;
-	char 			*exit_code;
-}	t_shell;
-
-typedef struct t_token
-{
-	char			*command;
-	int				nparams;
-	int				ninfiles;
-	int				noutfiles;
-	char			**params;
-	char			**infiles;
-	char			**outfiles;
-}	t_token;
-
 void    handle_shell(t_shell *shell);
 size_t	exec_ft_strlen(const char *s);
 size_t	exec_ft_strlcat(char *dst, const char *src, size_t size);
