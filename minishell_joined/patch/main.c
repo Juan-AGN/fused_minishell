@@ -21,10 +21,10 @@ int main(int argc, char **argv, char **envp)
 
 	if(!envp[0])
 		return 1;
+	if (argc == -1 || argv == NULL)
+		return 100;
 	minishell = ft_prepare_values(envp);
 	rl_redisplay();
-	argc = 0;
-	argv = NULL;
 	while (1)
 	{
 		cwd = getcwd(NULL, 0); //determina sola la memoria

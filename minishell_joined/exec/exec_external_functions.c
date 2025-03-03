@@ -115,9 +115,17 @@ pid_t	forking(int pipes[][2], t_shell *shell, char **directories, char **envp)
 		}
 		if (pid == 0)
 		{
-			chain = token_to_str(&(shell->token[i]));
-			redirect(pipes, &(shell->token[i]), i, shell->ncomands);
-			execute(chain, directories, envp);
+			if (!shell->token[i].command)
+			{
+				redirect(pipes, &(shell->token[i]), i, shell->ncomands);
+				exit(EXIT_SUCCESS);
+			}
+			else
+			{
+				chain = token_to_str(&(shell->token[i]));
+				redirect(pipes, &(shell->token[i]), i, shell->ncomands);
+				execute(chain, directories, envp);
+			}
 		}
 		i++;
 	}
