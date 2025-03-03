@@ -8,6 +8,12 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+typedef struct t_env
+{
+	char			*name;
+	char			*content;
+	struct t_env	*next;
+}	t_env;
 
 void	builtin_echo(char **args);
 void	builtin_cd(char **args);
@@ -21,7 +27,7 @@ void	free_array(char **directories);
 void builtin_exit(char **args) ;
 int	ft_aatoi(const char *nptr);
 int	ft_iisdigit(int c);
-void	builtin_unset(char **args, char **envp);
+void	builtin_unset(char **args, t_env **env);
 void	builtin_export(char **args, char ***envp);
 
 #endif

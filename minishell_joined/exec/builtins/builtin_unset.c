@@ -1,45 +1,48 @@
 #include "builtins.h"
-/*
-void	remove_from_env(char *key, char **envp)
+
+void	remove_from_env(char *key, t_env **env)
 {
-	int		i;
-	int		j;
+	t_env	*current;
+	t_env	*prev;
 	size_t	key_len;
 
-	if (!key || !envp) // Verificar si los punteros son válidos
-		return ;
+	if (!key || !env || !(*env)) // Verificar que hay algo en la lista
+		return;
+
+	current = *env;
+	prev = NULL;
 	key_len = ft_strrlen(key);
-	i = 0;
-	while (envp[i])
+	// Buscar la variable en la lista
+	while (current)
 	{
-		// Buscar la variable con el formato "key="
-		if (ft_strrncmp(envp[i], key, key_len) == 0 && envp[i][key_len] == '=')
+		if (ft_strrncmp(current->name, key, key_len) == 0) // Encontramos la variable
 		{
-			// No liberamos memoria, solo reorganizamos
-			j = i;
-			while (envp[j])
-			{
-				envp[j] = envp[j + 1];
-				j++;
-			}
-			envp[j] = NULL; // Final del array
-			break ;
+			if (prev) // Caso general: eliminar un nodo que no es el primero
+				prev->next = current->next;
+			else // Caso especial: eliminar el primer nodo
+				*env = current->next;
+
+			// Liberar memoria del nodo eliminado
+			free(current->name);
+			free(current->content);
+			free(current);
+			return;
 		}
-		i++;
+		prev = current;
+		current = current->next;
 	}
 }
 // Implementación del comando unset
-void	builtin_unset(char **args, char **envp)
+void	builtin_unset(char **args, t_env **env)
 {
 	int	i;
 
-	if (!args || !envp)
+	if (!args || !env || !*args)
 		return ;
 	i = 0;
-    while (args[i])
+    while (args[i] != NULL)
 	{
-		remove_from_env(args[i], envp);
+		remove_from_env(args[i], env);
 		i++;
 	}
 }
-*/

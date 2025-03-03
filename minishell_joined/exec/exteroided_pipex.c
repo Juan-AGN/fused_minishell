@@ -1,6 +1,6 @@
 #include "exteroided.h"
 
-void	execute_builtin(t_token   *command, char ** envp/*, t_env **envp*/)
+void	execute_builtin(t_token   *command, char ** envp, t_env **env)
 {
 	if (ft_strrncmp(command->command, "echo\0", 5) == 0)
 		builtin_echo(command->params);
@@ -12,8 +12,8 @@ void	execute_builtin(t_token   *command, char ** envp/*, t_env **envp*/)
 		builtin_env(envp);
 	else if (ft_strrncmp(command->command, "exit\0", 5) == 0)
 		builtin_exit(command->params);
-	//else if (ft_strrncmp(command->command, "unset\0", 6) == 0)
-	//	builtin_unset(command->params, envp);
+	else if (ft_strrncmp(command->command, "unset\0", 6) == 0)
+		builtin_unset(command->params, env);
 	//else if (ft_strrncmp(command->command, "export\0", 7) == 0)
 	//	builtin_export(command->params, envp);
         return;
@@ -212,7 +212,7 @@ void    handle_shell(t_shell *shell)
     }
     if (shell->ncomands == 1 && is_builtin(shell->token[0].command))
     {
-        execute_builtin(shell->token, envp /*,shell->env*/);
+        execute_builtin(shell->token, envp ,shell->env);
         free_array(envp);
         return;
     }

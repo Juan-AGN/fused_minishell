@@ -21,13 +21,6 @@ typedef struct t_shell
 	char 			*exit_code;
 }	t_shell;
 
-typedef struct t_env
-{
-	char			*name;
-	char			*content;
-	struct t_env	*next;
-}	t_env;
-
 typedef struct t_token
 {
 	char			*command;
