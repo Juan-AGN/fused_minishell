@@ -1,6 +1,6 @@
 #include "builtins.h"
 
-void	builtin_cd(char **args)
+int	builtin_cd(char **args)
 {
 	char	*path;
 
@@ -10,16 +10,20 @@ void	builtin_cd(char **args)
 		if (!path)
 		{
 			write(2, "cd: HOME not set\n", 17);
-			return ;
+			return 1;
 		}
 	}
 	else if (args[1])
 	{
 		perror("cd: too many arguments");
-		return;
+		return 1;
 	}
 	else
 		path = args[0];
 	if(chdir(path) == -1)
+	{
 		perror("cd");
+		return 1;
+	}
+	return 0;
 }

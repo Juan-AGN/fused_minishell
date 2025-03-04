@@ -15,7 +15,7 @@ int is_numeric(const char *str) {
 }
 
 // Implementación del builtin exit
-void builtin_exit(char **args) {
+int builtin_exit(char **args) {
 	int exit_code = 0;
 
 	write(STDOUT_FILENO, "exit\n", 5);
@@ -28,13 +28,13 @@ void builtin_exit(char **args) {
 		write(STDERR_FILENO, "minishell: exit: ", 17);
 		write(STDERR_FILENO, args[0], strlen(args[0]));
 		write(STDERR_FILENO, ": numeric argument required\n", 28);
-		exit(255);
+		exit(2);
 	}
 
 	if (args[1]) 
     {
 		write(STDERR_FILENO, "minishell: exit: too many arguments\n", 36);
-		return;
+		return 1;
 	}
 	exit(exit_code);
 }

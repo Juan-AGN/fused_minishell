@@ -1,22 +1,24 @@
 #include "exteroided.h"
 
-void	execute_builtin(t_token   *command, char ** envp, t_env **env)
+int	execute_builtin(t_token   *command, char ** envp, t_env **env)
 {
+	int return_status = 0; 
+
 	if (ft_strrncmp(command->command, "echo\0", 5) == 0)
 		builtin_echo(command);
     else if (ft_strrncmp(command->command, "cd\0", 3) == 0)
-		builtin_cd(command->params);
+		return_status = builtin_cd(command->params);
     else if (ft_strrncmp(command->command, "pwd\0", 4) == 0)
 		builtin_pwd();
 	else if (ft_strrncmp(command->command, "env\0", 4) == 0)
-		builtin_env(envp);
+		return_status = builtin_env(command->nparams, envp);
 	else if (ft_strrncmp(command->command, "exit\0", 5) == 0)
-		builtin_exit(command->params);
+		return_status = builtin_exit(command->params);
 	else if (ft_strrncmp(command->command, "unset\0", 6) == 0)
 		builtin_unset(command, env);
 	else if (ft_strrncmp(command->command, "export\0", 7) == 0)
-		builtin_export(command, env);
-        return;
+		return_status= builtin_export(command, env);
+        return (return_status);
 }
 
 int is_builtin(char *builtin)
@@ -67,7 +69,7 @@ void	handle_tofile(int pipes[][2], t_token *token, int current, int ncomands)
 		if (fileout < 0)
 		{
 			shit = i;
-			perror("error file");
+			perror("error file"); //y si se escrie a un archivo sin permisos, hay que verlo?
 		}
 		free(chain);
 		i++;
@@ -95,7 +97,7 @@ void	handle_fromfile(int pipes[][2], t_token *token, int current)
 	shit = -1;
 	if (token->ninfiles == 0 && current > 0)
 		dup2(pipes[current - 1][0], STDIN_FILENO);
-	while (i < token->ninfiles)
+	while (i < token->ninfiles) //primero habria que hacer todos los heredocs y luego los otros
 	{
 		chain = exec_ft_substr(token->infiles[i], 3, exec_ft_strlen(token->infiles[i]) - 3);
 		if ((exec_ft_strncmp(token->infiles[i], "<<", 2)) != 0)
@@ -210,12 +212,15 @@ void    handle_shell(t_shell *shell)
         perror("malloc error");
         return;
     }
-	if (shell->ncomands == 1 && shell->token[0].command != NULL && is_builtin(shell->token[0].command))
+	/*if (shell->ncomands == 1 && shell->token[0].command != NULL && is_builtin(shell->token[0].command))
 	{
+		int		(*dummy_pipe)[2];
+		dummy_pipe = malloc(sizeof(int [2]) * (shell->ncomands - 1)); 
+		redirect(dummy_pipe, &(shell->token[0]), 0, shell->ncomands);
         execute_builtin(shell->token, envp ,shell->env);
         free_array(envp);
         return;
-    }
+    }*/
 	directories = find_directories(envp);
 	if (!directories)
 	{

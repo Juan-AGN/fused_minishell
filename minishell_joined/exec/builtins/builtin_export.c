@@ -3,12 +3,12 @@
 // Función auxiliar para verificar si un identificador es válido
 int is_valid_identifier(const char *str)
 {
-    if (!str || *str == '\0' || !(isalpha(*str) || *str == '_'))
+    if (!str || *str == '\0' || !(ft_iisalpha(*str) || *str == '_'))
         return 0;
     str++;
     while (*str)
     {
-        if (!(isalnum(*str) || *str == '_'))
+        if (!(ft_iisalnum(*str) || *str == '_'))
             return 0;
         str++;
     }
@@ -31,11 +31,11 @@ void add_to_env(char *key, char *value, t_env **env)
     current = *env;
     while (current != NULL)
     {
-        if (strcmp(current->name, key) == 0)
+        if (ft_strrncmp(current->name, key, ft_strrlen(key)) == 0)
         {
             // Si existe, se reemplaza su contenido.
             free(current->content);
-            current->content = strdup(value);
+            current->content = ft_sstrdup(value);
             if (!current->content)
             {
                 perror("strdup");
@@ -53,13 +53,13 @@ void add_to_env(char *key, char *value, t_env **env)
         perror("malloc");
         exit(EXIT_FAILURE);
     }
-    new_node->name = strdup(key);
+    new_node->name = ft_sstrdup(key);
     if (!new_node->name)
     {
         perror("strdup");
         exit(EXIT_FAILURE);
     }
-    new_node->content = strdup(value);
+    new_node->content = ft_sstrdup(value);
     if (!new_node->content)
     {
         perror("strdup");
@@ -84,17 +84,14 @@ void add_to_env(char *key, char *value, t_env **env)
 }
 
 // Implementación del comando export usando t_token
-void builtin_export(t_token *command, t_env **env)
+int builtin_export(t_token *command, t_env **env)
 {
     int i;
     char *equal_sign;
+    int return_value;
+    return_value = 0;
 
-    // Verificar argumentos; si son inválidos, se notifica el error y se sale.
-    if (!command || !env)
-    {
-        write(2, "Error: Argumentos invalidos en builtin_export\n", 48);
-        return;
-    }
+ 
 
     // Si no se reciben parámetros, se listan las variables del entorno.
     if (command->nparams == 0)
@@ -105,7 +102,7 @@ void builtin_export(t_token *command, t_env **env)
             printf("declare -x %s=%s\n", current->name, current->content);
             current = current->next;
         }
-        return;
+        return 0;
     }
 
     // Procesar cada uno de los parámetros recibidos en el comando.
@@ -113,7 +110,7 @@ void builtin_export(t_token *command, t_env **env)
     while (i < command->nparams)
     {
         // Se busca el carácter '=' para determinar si el parámetro es clave-valor.
-        equal_sign = strchr(command->params[i], '=');
+        equal_sign = ft_sstrchr(command->params[i], '=');
         if (equal_sign)
         {
             // Se separa temporalmente la clave del valor.
@@ -127,6 +124,7 @@ void builtin_export(t_token *command, t_env **env)
             {
                 // Si el identificador es inválido, se muestra un mensaje de error.
                 printf("export: `%s': not a valid identifier\n", command->params[i]);
+                return_value = 1;
             }
             // Se restaura el carácter '=' en el parámetro original.
             *equal_sign = '=';
@@ -140,10 +138,12 @@ void builtin_export(t_token *command, t_env **env)
             {
                 // Se muestra un mensaje de error si el identificador es inválido.
                 printf("export: `%s': not a valid identifier\n", command->params[i]);
+                return_value = 1;
             }
         }
         i++;
     }
+    return (return_value);
 }
 
 

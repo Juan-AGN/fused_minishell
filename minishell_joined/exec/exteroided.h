@@ -37,6 +37,6 @@ char	*exec_ft_strjoin(char const *s1, char const *s2);
 char	*exec_get_next_line(int fd);
 char	*ft_itoa(int n);
 int is_builtin(char *builtin);
-void	execute_builtin(t_token   *command, char ** envp, t_env **env);
+int	execute_builtin(t_token   *command, char ** envp, t_env **env);
 
 #endif

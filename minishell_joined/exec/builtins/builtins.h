@@ -35,18 +35,25 @@ typedef struct t_token
 }	t_token;
 
 void	builtin_echo(t_token *command);
-void	builtin_cd(char **args);
+int	builtin_cd(char **args);
 size_t	ft_strrlen(const char *s);
 int     ft_strrncmp(const char *s1, const char *s2, size_t n);
 void	builtin_pwd(void);
-void	builtin_env(char **envp);
+int	builtin_env(int nparams, char **envp);
 char	**ft_spplit(char const *s, char c);
 void	*ft_meemcpy(void *dest, const void *src, size_t n);
 void	free_array(char **directories);
-void builtin_exit(char **args) ;
+int	 builtin_exit(char **args) ;
 int	ft_aatoi(const char *nptr);
 int	ft_iisdigit(int c);
 void	builtin_unset(t_token *command, t_env **env);
-void	builtin_export(t_token   *command, t_env **env);
+int	builtin_export(t_token   *command, t_env **env);
+char	*ft_sstrchr(const char *s, int c);
+int	ft_iisalpha(int c);
+int	ft_iisalnum(int c);
+char	*ft_sstrdup(const char *s1);
+void	*ft_ccalloc(size_t count, size_t size);
+void	ft_bbzero(void *s, size_t n);
+void	*ft_mmemset(void *s, int c, size_t len);
 
 #endif
