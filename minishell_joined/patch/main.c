@@ -57,3 +57,51 @@ int main(int argc, char **argv, char **envp)
 	rl_clear_history();
 	return 0;
 }
+
+/*		printf("a\n");
+		int o = 0;
+		int u = 0;
+		int e = 0;
+		int ou = 0;
+		if (minishell->token != NULL)
+		{
+			while (o != minishell->ncomands)
+			{
+				printf("COMAND %i: %s\n", o, minishell->token[o].command);
+				while (u != minishell->token[o].nparams)
+				{
+					printf("	COMAND %i PARAM %i: %s\n", o, u, minishell->token[o].params[u]);
+					u ++;
+				}
+				if (minishell->token[o].infiles != NULL)
+				{
+					while (e != minishell->token[o].ninfiles)
+					{
+						printf("<%i	COMAND %i INFILE %i: %s\n", minishell->token[o].ninfiles, o, e, minishell->token[o].infiles[e]);
+						e ++;
+					}
+				}
+				if (minishell->token[o].outfiles != NULL)
+				{
+					while (ou != minishell->token[o].noutfiles)
+					{
+						printf(">%i	COMAND %i OUTFILE %i: %s\n", minishell->token[o].noutfiles, o, ou, minishell->token[o].outfiles[ou]);
+						ou ++;
+					}
+				}
+				ou = 0;
+				if (minishell->token[o].inout != NULL)
+				{
+					while (ou != minishell->token[o].ninout)
+					{
+						printf("%i COMAND %i INOUT %i: %s -> ", minishell->token[o].ninout, o, ou, minishell->token[o].inout[ou]);
+						ou ++;
+					}
+					printf("\n");
+				}
+				ou = 0;
+				e = 0;
+				u = 0;
+				o ++;
+			}
+		}*/

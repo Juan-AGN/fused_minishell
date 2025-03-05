@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:41:23 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/02 18:29:53 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/05 18:29:47 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,11 @@ int	ft_alloctoken(int i, t_shell *minishell)
 		minishell->token[u].params = NULL;
 		minishell->token[u].infiles = NULL;
 		minishell->token[u].outfiles = NULL;
+		minishell->token[u].inout = NULL;
 		minishell->token[u].nparams = 0;
 		minishell->token[u].ninfiles = 0;
 		minishell->token[u].noutfiles = 0;
+		minishell->token[u].ninout = 0;
 		u ++;
 	}
 	return (1);
