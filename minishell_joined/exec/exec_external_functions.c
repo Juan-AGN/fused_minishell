@@ -132,7 +132,7 @@ pid_t	forking(int pipes[][2], t_shell *shell, char **directories, char **envp)
 			else
 			{
 				chain = token_to_str(&(shell->token[i]));
-				return_status = redirect(pipes, &(shell->token[i]), i, shell->ncomands);
+				/*return_status = */redirect(pipes, &(shell->token[i]), i, shell->ncomands);
 				if (is_builtin(shell->token[i].command)) //en builtins si hay dos errores se prioriza el de redirect
 				{
 					if (return_status == 0)
