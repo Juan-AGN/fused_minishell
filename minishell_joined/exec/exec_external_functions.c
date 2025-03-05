@@ -109,13 +109,13 @@ pid_t	forking(int pipes[][2], t_shell *shell, char **directories, char **envp)
 	return_status = 0;
 	while (i < shell->ncomands)
 	{
-		if (shell->ncomands == 1 && shell->token[0].command != NULL && is_builtin(shell->token[0].command))
+		/*if (shell->ncomands == 1 && shell->token[0].command != NULL && is_builtin(shell->token[0].command))
 		{
 			redirect(pipes, &(shell->token[0]), 0, shell->ncomands);
       	  	execute_builtin(shell->token, envp ,shell->env);
        	 	free_array(envp);
         	exit(3);
-    	}
+    	}*/
 		pid = fork();
 		if (pid == -1)
 		{

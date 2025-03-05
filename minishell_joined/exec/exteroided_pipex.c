@@ -212,15 +212,13 @@ void    handle_shell(t_shell *shell)
         perror("malloc error");
         return;
     }
-	/*if (shell->ncomands == 1 && shell->token[0].command != NULL && is_builtin(shell->token[0].command))
+	if (shell->ncomands == 1 && shell->token[0].command != NULL && is_builtin(shell->token[0].command))
 	{
-		int		(*dummy_pipe)[2];
-		dummy_pipe = malloc(sizeof(int [2]) * (shell->ncomands - 1)); 
-		redirect(dummy_pipe, &(shell->token[0]), 0, shell->ncomands);
+		/*redirect(dummy_pipe, &(shell->token[0]), 0, shell->ncomands);*/
         execute_builtin(shell->token, envp ,shell->env);
         free_array(envp);
         return;
-    }*/
+    }
 	directories = find_directories(envp);
 	if (!directories)
 	{
