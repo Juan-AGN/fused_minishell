@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 11:57:54 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/05 18:07:05 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/06 13:03:15 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ typedef struct t_shell
 	struct t_token	*token;
 	int				ncomands;
 	char			*exit_code;
+	int				error;
 }	t_shell;
 
 typedef struct t_env

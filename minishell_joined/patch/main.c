@@ -1,5 +1,36 @@
 #include "../include/minishell.h"
 
+void	handler(int sig)
+{
+	if (sig == SIGINT)
+	{
+		rl_on_new_line();
+		rl_redisplay();
+		ft_putstr_fd("  ", 1);
+		printf("\n");
+		rl_replace_line("", 0);
+		rl_on_new_line();
+		rl_redisplay();
+	}
+	else if (sig == SIGQUIT)
+	{
+		rl_on_new_line();
+		rl_replace_line("  ", 0);
+		rl_redisplay();
+	}
+}
+
+void	if_signal(void)
+{
+	struct sigaction	sig;
+
+	sig.sa_handler = &handler;
+	sig.sa_flags = SA_RESTART;
+	sigemptyset(&sig.sa_mask);
+	sigaction(SIGINT, &sig, NULL);
+	sigaction(SIGQUIT, &sig, NULL);
+}
+
 int	ft_search_space(char *str)
 {
 	while (*str)
@@ -25,6 +56,7 @@ int main(int argc, char **argv, char **envp)
 		return 100;
 	minishell = ft_prepare_values(envp);
 	rl_redisplay();
+	if_signal();
 	while (1)
 	{
 		cwd = getcwd(NULL, 0); //determina sola la memoria
@@ -42,9 +74,14 @@ int main(int argc, char **argv, char **envp)
 		else
 			printf("");
 		ret = ft_maintoken(minishell, input);
-		if (input != NULL && ret == 0)
+		if (input != NULL && ret == 0 && minishell->error == 0)
 		{
 			handle_shell(minishell);
+		}
+		if (minishell->error != 0)
+		{
+			ft_printf("Error\n");
+			minishell->error = 0;
 		}
 		ft_free_tokens(minishell, minishell->token);
 		free(input);

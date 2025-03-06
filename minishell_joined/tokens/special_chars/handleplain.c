@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 16:39:23 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/01/29 16:51:44 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/06 13:16:27 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,9 @@ char	*ft_plain_cases(t_shell *minishell, char *str, char *tojoin)
 	{
 		while (str[i] != str[0] && str[i] != '\0')
 			i ++;
-		if (str[i] != '\0')
-			i ++;
+		if (str[i] == '\0' && (str[0] == 39 || str[0] == 34))
+			minishell->error = 1;
+		i ++;
 	}
 	tojoin = ft_handleplain(minishell, &str[i], res);
 	free(res);
