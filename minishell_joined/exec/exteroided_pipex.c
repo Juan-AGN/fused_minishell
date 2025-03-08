@@ -78,8 +78,6 @@ void	handle_tofile(int pipes[][2], t_token *token, int current, int ncomands)
 	{
 		dup2(fileout, STDOUT_FILENO);
 		close(fileout);
-		if (current < ncomands - 1) //la clave a ver
-			close(pipes[current][1]);
 	}
 }
 
@@ -149,11 +147,12 @@ void	handle_fromfile(int pipes[][2], t_token *token, int current)
 	}
 }
 
-void	redirect(int pipes[][2], t_token *token, int current, int ncomands)
+int	redirect(int pipes[][2], t_token *token, int current, int ncomands)
 {
 	int	i;
 
 	i = 0;
+
 	handle_fromfile(pipes, token, current);
 	handle_tofile(pipes, token, current, ncomands);
 	while (i < ncomands - 1)
@@ -210,13 +209,6 @@ void    handle_shell(t_shell *shell)
     if (!envp)
     {
         perror("malloc error");
-        return;
-    }
-	if (shell->ncomands == 1 && shell->token[0].command != NULL && is_builtin(shell->token[0].command))
-	{
-		/*redirect(dummy_pipe, &(shell->token[0]), 0, shell->ncomands);*/
-        execute_builtin(shell->token, envp ,shell->env);
-        free_array(envp);
         return;
     }
 	directories = find_directories(envp);

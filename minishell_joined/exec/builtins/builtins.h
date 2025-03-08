@@ -8,6 +8,15 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+typedef struct t_shell
+{
+	struct t_env	**env;
+	struct t_token	*token;
+	int				ncomands;
+	char			*exit_code;
+	int				error;
+}	t_shell;
+
 typedef struct t_env
 {
 	char			*name;
@@ -15,24 +24,19 @@ typedef struct t_env
 	struct t_env	*next;
 }	t_env;
 
-typedef struct t_shell
-{
-	struct t_env	**env;
-	struct t_token	*token;
-	int				ncomands;
-	char 			*exit_code;
-}	t_shell;
-
 typedef struct t_token
 {
 	char			*command;
 	int				nparams;
 	int				ninfiles;
 	int				noutfiles;
+	int				ninout;
 	char			**params;
 	char			**infiles;
 	char			**outfiles;
+	char			**inout;
 }	t_token;
+
 
 void	builtin_echo(t_token *command);
 int	builtin_cd(char **args);
