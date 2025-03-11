@@ -27,7 +27,7 @@ void	exec_free_array(char **directories);
 char **exec_convert_env_to_array(t_shell *shell);
 void	create_pipes(int pipes[][2], int ncom);
 char	**exec_split(char const *s, char c);
-pid_t	forking(int pipes[][2], t_shell *shell, char **directories, char **envp);
+t_return	forking(int pipes[][2], t_shell *shell, char **directories, char **envp);
 int	returning(int ncom, pid_t pid);
 char	**find_directories(char **envp);
 int		redirect(int pipes[][2], t_token *token, int current, int ncomands);

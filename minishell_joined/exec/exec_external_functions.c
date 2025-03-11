@@ -101,15 +101,13 @@ char *token_to_str(const t_token *token)
 t_return	forking(int pipes[][2], t_shell *shell, char **directories, char **envp)
 {
 	int		i;
-	pid_t	pid;
-	char *chain;
-	int return_status;
+	char *chain;;
 	t_return pid_return;
 
 	i = 0;
-	t_return.pid = -1;
-	t_return.return_value = 0;
-	t_return.use_pid = 1;
+	pid_return.pid = -1;
+	pid_return.return_value = 0;
+	pid_return.use_pid = 1;
 	while (i < shell->ncomands)
 	{
 		if (shell->ncomands == 1 && shell->token[0].command != NULL && is_builtin(shell->token[0].command))
@@ -124,41 +122,36 @@ t_return	forking(int pipes[][2], t_shell *shell, char **directories, char **envp
 			pid_return.use_pid = 2; // no hacer waitpid
 				return (pid_return);
     	}
-		t_return.pid = fork();
-		if (t_return.pid == -1)
+		pid_return.pid = fork();
+		if (pid_return.pid == -1)
 		{
 			perror("fork");
 			exit(EXIT_FAILURE);
 		}
-		if (t_return.pid == 0)
+		if (pid_return.pid == 0)
 		{
 			if (!shell->token[i].command)
 			{
 				pid_return.return_value = redirect(pipes, &(shell->token[i]), i, shell->ncomands);
-				if (pid_return.return_value != 0)
-				{
-
-				}
-				exit(return_status);
+				exit(pid_return.return_value);
 			}
 			else
 			{
 				chain = token_to_str(&(shell->token[i]));
-				/*return_status = */redirect(pipes, &(shell->token[i]), i, shell->ncomands);
+				pid_return.return_value = redirect(pipes, &(shell->token[i]), i, shell->ncomands);
+				if (pid_return.return_value != 0)
+					exit(pid_return.return_value);
 				if (is_builtin(shell->token[i].command)) //en builtins si hay dos errores se prioriza el de redirect
 				{
-					if (return_status == 0)
-						return_status = execute_builtin(&(shell->token[i]), envp, shell->env);
-					else
-						execute_builtin(&(shell->token[i]), envp, shell->env);
-					exit(return_status);
+					pid_return.return_value = execute_builtin(&(shell->token[i]), envp, shell->env);
+					exit(pid_return.return_value);
 				}
 				execute(chain, directories, envp);
 			}
 		}
 		i++;
 	}
-	return (pid);
+	return (pid_return);
 }
 
 void	try(char *full_path, char **commands, char **directories, char **envp)

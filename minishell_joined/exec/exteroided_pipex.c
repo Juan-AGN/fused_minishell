@@ -34,17 +34,90 @@ int is_builtin(char *builtin)
     return (0);
 }
 
+int	open_heredocs(t_token *token)
+{
+	int i = 0;
+	char *chain;
+	int		pipe_heredoc[2];
+
+	pipe_heredoc[0] = -1;
+	pipe_heredoc[1] = -1;
+	while (i < token->ninout) //primero habria que hacer todos los heredocs y luego los otros
+	{
+		chain = exec_ft_substr(token->inout[i], 3, exec_ft_strlen(token->inout[i]) - 3);
+		if ((exec_ft_strncmp(token->inout[i], "<<", 2)) == 0)
+		{
+			if (pipe(pipe_heredoc) < 0)
+            {
+                perror("Error creating heredoc pipe");
+                exit(EXIT_FAILURE); // hay que mirar estas cosas para que cierre la shell
+            }
+			here_doc_child(chain, pipe_heredoc[1]);
+			close(pipe_heredoc[1]);
+		}
+		if ((exec_ft_strncmp(token->inout[i], "< ", 2)) == 0)
+			pipe_heredoc[0] = -1;
+		free(chain);
+		i++;
+	}
+	return (pipe_heredoc[0]); // se devuelve el extremo de lectura
+}
+
+int	handle_redirections(int pipes[][2], t_token *token, int current, int ncomands, int real_heredoc)
+{
+	int i;
+	int	fileout;
+	int filein;
+	char *chain;
+
+	i = 0;
+	fileout = -1;
+	filein = -1;
+	if (token->ninfiles == 0 && current > 0)
+		dup2(pipes[current - 1][0], STDIN_FILENO);
+	if (token->noutfiles == 0 && current < ncomands - 1)
+		dup2(pipes[current][1], STDOUT_FILENO);
+	while (i < token->ninout)
+	{
+		chain = exec_ft_substr(token->inout[i], 3, exec_ft_strlen(token->inout[i]) - 3);
+		if ((exec_ft_strncmp(token->outfiles[i], ">>", 2)) == 0)
+			fileout = open(chain, O_WRONLY | O_CREAT
+					| O_APPEND, 0644);
+		else if (exec_ft_strncmp(token->outfiles[i], "> ", 2) == 0)
+			fileout = open(chain, O_WRONLY | O_CREAT
+					| O_TRUNC, 0644);
+		if (fileout < 0)
+		{
+			perror("error file");
+			return 1;
+		}
+		if ((exec_ft_strncmp(token->infiles[i], "< ", 2)) == 0)
+		{
+			filein = open(chain, O_RDONLY);
+			if (filein < 0)
+			{
+				perror("error file");
+				return 1;
+			}
+		}
+		free(chain);
+		i++;
+	}
+	if (real_heredoc > -1)
+	{
+		dup2(real_heredoc, STDIN_FILENO);
+		close(real_heredoc); 
+	}
+	else
+	{
+		dup2(filein, STDIN_FILENO);
+		close(filein);
+	}
+	dup2(fileout, STDOUT_FILENO);
+	close(fileout);
+	return 0;
+}
 /*
-create pipes, eso lo primero
-hasta aqui es facil, ahora solo hay que cambiar el redirect,
-es importante pensar que en el redirect hay que ir pasando token a token
-la estructura de run se quedaria muy parecida
-lo importante ahora es pensar en la implementacion del redirect, y pensar
-que hay que cambiar el handle_tofile y handle_fromfile
-
-
-*/
-
 void	handle_tofile(int pipes[][2], t_token *token, int current, int ncomands)
 {
 	int i;
@@ -146,31 +219,35 @@ void	handle_fromfile(int pipes[][2], t_token *token, int current)
 		close(pipe_heredoc[0]); 
 	}
 }
-
+*/
 int	redirect(int pipes[][2], t_token *token, int current, int ncomands)
 {
 	int	i;
+	int read_heredoc;
+	int exit_value;
 
 	i = 0;
-
-	handle_fromfile(pipes, token, current);
-	handle_tofile(pipes, token, current, ncomands);
+	read_heredoc = open_heredocs(token);
+	exit_value = handle_redirections(pipes, token, current, ncomands, read_heredoc);
+	/*handle_fromfile(pipes, token, current);
+	handle_tofile(pipes, token, current, ncomands);*/
 	while (i < ncomands - 1)
 	{
 		close(pipes[i][0]);
 		close(pipes[i][1]);
 		i++;
 	}
+	return (exit_value);
 }
 
 void	run(t_shell *shell, char **directories, char **envp)
 {
 	int		(*pipes)[2];
-	pid_t	pid;
 	int		i;
 	int		exit_code;
+	t_return pid_return;
 
-	pipes = malloc(sizeof(int [2]) * (shell->ncomands - 1));
+	pipes = malloc(sizeof(int [2]) * (shell->ncomands - 1)); // ver el caso en que ncomands es 1 porque puede que no libere memoria abajo, ver si asignando a null sigue funcionando
 	if (!pipes)
 	{
 		perror("malloc");
@@ -178,9 +255,21 @@ void	run(t_shell *shell, char **directories, char **envp)
 	}
 	i = 0;
 	create_pipes(pipes, shell->ncomands);
-	pid = forking(pipes, shell, directories, envp);
+	pid_return = forking(pipes, shell, directories, envp);
 	free_array(directories);
     free_array(envp);
+	if (pid_return.use_pid == 2)
+	{
+		free(shell->exit_code);
+		exit_code = pid_return.return_value;
+		shell->exit_code = ft_itoa(exit_code);
+		if (!shell->exit_code)
+		{
+			perror("malloc error");
+			return;
+		}
+		return;
+	}
 	while (i < shell->ncomands - 1)
 	{
 		close(pipes[i][0]);
@@ -189,7 +278,7 @@ void	run(t_shell *shell, char **directories, char **envp)
 	}
 	free(pipes);
 	free(shell->exit_code);
-	exit_code = returning(shell->ncomands, pid);
+	exit_code = returning(shell->ncomands, pid_return.pid);
 	shell->exit_code = ft_itoa(exit_code);
 	if (!shell->exit_code)
 	{
