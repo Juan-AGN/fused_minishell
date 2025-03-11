@@ -71,7 +71,7 @@ int	handle_redirections(int pipes[][2], t_token *token, int current, int ncomand
 	char *chain;
 
 	i = 0;
-	fileout = -1;
+	fileout = 0;
 	filein = -1;
 	if (token->ninfiles == 0 && current > 0)
 		dup2(pipes[current - 1][0], STDIN_FILENO);
@@ -80,10 +80,10 @@ int	handle_redirections(int pipes[][2], t_token *token, int current, int ncomand
 	while (i < token->ninout)
 	{
 		chain = exec_ft_substr(token->inout[i], 3, exec_ft_strlen(token->inout[i]) - 3);
-		if ((exec_ft_strncmp(token->outfiles[i], ">>", 2)) == 0)
+		if ((exec_ft_strncmp(token->inout[i], ">>", 2)) == 0)
 			fileout = open(chain, O_WRONLY | O_CREAT
 					| O_APPEND, 0644);
-		else if (exec_ft_strncmp(token->outfiles[i], "> ", 2) == 0)
+		else if (exec_ft_strncmp(token->inout[i], "> ", 2) == 0)
 			fileout = open(chain, O_WRONLY | O_CREAT
 					| O_TRUNC, 0644);
 		if (fileout < 0)
@@ -91,7 +91,7 @@ int	handle_redirections(int pipes[][2], t_token *token, int current, int ncomand
 			perror("error file");
 			return 1;
 		}
-		if ((exec_ft_strncmp(token->infiles[i], "< ", 2)) == 0)
+		if ((exec_ft_strncmp(token->inout[i], "< ", 2)) == 0)
 		{
 			filein = open(chain, O_RDONLY);
 			if (filein < 0)
@@ -108,7 +108,7 @@ int	handle_redirections(int pipes[][2], t_token *token, int current, int ncomand
 		dup2(real_heredoc, STDIN_FILENO);
 		close(real_heredoc); 
 	}
-	else
+	else if (real_heredoc == -1)
 	{
 		dup2(filein, STDIN_FILENO);
 		close(filein);
@@ -117,6 +117,7 @@ int	handle_redirections(int pipes[][2], t_token *token, int current, int ncomand
 	close(fileout);
 	return 0;
 }
+
 /*
 void	handle_tofile(int pipes[][2], t_token *token, int current, int ncomands)
 {
