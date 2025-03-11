@@ -20,7 +20,6 @@ char	**ft_ord_inout(int i, t_token *token)
 	u = 0;
 	token->ninout = i;
 	toret = malloc(sizeof(char *) * i);
-	printf("%i\n", i);
 	if (toret == NULL)
 		return (NULL);
 	while (u != i)
