@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 16:39:23 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/12 14:54:24 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/12 15:01:48 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ char	*ft_plain_cases(t_shell *minishell, char *str, char *tojoin)
 	if (res == NULL)
 		return (NULL);
 	if (str[0] == '$')
-		i += ft_return_lenght(str);
+		i += ft_return_lenght(str + i);
 	else
 	{
 		while (str[i] != str[0] && str[i] != '\0')
