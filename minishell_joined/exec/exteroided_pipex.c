@@ -103,18 +103,21 @@ int	handle_redirections(int pipes[][2], t_token *token, int current, int ncomand
 		free(chain);
 		i++;
 	}
-	if (real_heredoc > -1)
+	if (real_heredoc > -1 && token->ninfiles > 0)
 	{
 		dup2(real_heredoc, STDIN_FILENO);
 		close(real_heredoc); 
 	}
-	else if (real_heredoc == -1)
+	else if (real_heredoc == -1 && token->ninfiles > 0)
 	{
 		dup2(filein, STDIN_FILENO);
 		close(filein);
 	}
+	if (token->noutfiles > 0)
+	{
 	dup2(fileout, STDOUT_FILENO);
 	close(fileout);
+	}
 	return 0;
 }
 

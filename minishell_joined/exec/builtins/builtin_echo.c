@@ -15,7 +15,7 @@ void	builtin_echo(t_token *command)
 	while (i < command->nparams)
 	{
 		write(1, command->params[i], ft_strrlen(command->params[i]));
-		if (command->params[i + 1])
+		if (i < command->nparams - 1)
 			write(1, " ", 1);
 		i++;
 	}
