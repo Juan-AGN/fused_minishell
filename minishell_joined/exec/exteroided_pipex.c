@@ -121,6 +121,26 @@ int	handle_redirections(int pipes[][2], t_token *token, int current, int ncomand
 	return 0;
 }
 
+int	redirect(int pipes[][2], t_token *token, int current, int ncomands)
+{
+	int	i;
+	int read_heredoc;
+	int exit_value;
+
+	i = 0;
+	read_heredoc = open_heredocs(token);
+	exit_value = handle_redirections(pipes, token, current, ncomands, read_heredoc);
+	/*handle_fromfile(pipes, token, current);
+	handle_tofile(pipes, token, current, ncomands);*/
+	while (i < ncomands - 1)
+	{
+		close(pipes[i][0]);
+		close(pipes[i][1]);
+		i++;
+	}
+	return (exit_value);
+}
+
 /*
 void	handle_tofile(int pipes[][2], t_token *token, int current, int ncomands)
 {
@@ -224,25 +244,6 @@ void	handle_fromfile(int pipes[][2], t_token *token, int current)
 	}
 }
 */
-int	redirect(int pipes[][2], t_token *token, int current, int ncomands)
-{
-	int	i;
-	int read_heredoc;
-	int exit_value;
-
-	i = 0;
-	read_heredoc = open_heredocs(token);
-	exit_value = handle_redirections(pipes, token, current, ncomands, read_heredoc);
-	/*handle_fromfile(pipes, token, current);
-	handle_tofile(pipes, token, current, ncomands);*/
-	while (i < ncomands - 1)
-	{
-		close(pipes[i][0]);
-		close(pipes[i][1]);
-		i++;
-	}
-	return (exit_value);
-}
 
 void	run(t_shell *shell, char **directories, char **envp)
 {

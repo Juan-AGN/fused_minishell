@@ -1,43 +1,47 @@
 #include "exteroided.h"
 
-char **exec_convert_env_to_array(t_shell *shell)
+char	**exec_convert_env_to_array(t_shell *shell)
 {
-    int count = 0;
-    t_env *tmp = *(shell->env);
-    
-    while (tmp)
-    {
-        count++;
-        tmp = tmp->next;
-    }
-    
-    char **envp = (char **)malloc(sizeof(char *) * (count + 1));
-    if (!envp)
-        return NULL;
-    
-    tmp = *(shell->env);
-    int i = 0;
-    while (i < count)
-    {
-        size_t len = exec_ft_strlen(tmp->name) + exec_ft_strlen(tmp->content) + 2;
-        envp[i] = (char *)malloc(len);
-        if (!envp[i])
-        {
-            int j = i;
-            while (--j >= 0)
-                free(envp[j]);
-            free(envp);
-            return NULL;
-        }
-        envp[i][0] = '\0';
-        exec_ft_strlcat(envp[i], tmp->name, len);
-        exec_ft_strlcat(envp[i], "=", len);
-        exec_ft_strlcat(envp[i], tmp->content, len);
-        tmp = tmp->next;
-        i++;
-    }
-    envp[count] = NULL;
-    return envp;
+	int		count;
+	t_env	*tmp;
+	char	**envp;
+	int		i;
+	size_t	len;
+	int		j;
+
+	tmp = *(shell->env);
+	count = 0;
+	i = 0;
+	while (tmp)
+	{
+		count++;
+		tmp = tmp->next;
+	}
+	envp = (char **)malloc(sizeof(char *) * (count + 1));
+	if (!envp)
+		return (NULL);
+	tmp = *(shell->env);
+	while (i < count)
+	{
+		len = exec_ft_strlen(tmp->name) + exec_ft_strlen(tmp->content) + 2;
+		envp[i] = (char *)malloc(len);
+		if (!envp[i])
+		{
+			j = i;
+			while (--j >= 0)
+				free(envp[j]);
+			free(envp);
+			return (NULL);
+		}
+		envp[i][0] = '\0';
+		exec_ft_strlcat(envp[i], tmp->name, len);
+		exec_ft_strlcat(envp[i], "=", len);
+		exec_ft_strlcat(envp[i], tmp->content, len);
+		tmp = tmp->next;
+		i++;
+	}
+	envp[count] = NULL;
+	return (envp);
 }
 
 void	exec_free_array(char **directories)
@@ -69,40 +73,43 @@ void	create_pipes(int pipes[][2], int ncom)
 	}
 }
 
-char *token_to_str(const t_token *token)
+char	*token_to_str(const t_token *token)
 {
-    if (!token || !token->command)
-        return NULL;
+	size_t	total_length;
+	int		i;
+	char	*result;
 
-    size_t total_length = exec_ft_strlen(token->command);
-    int i = 0;
-    while (i < token->nparams)
-    {
-        total_length += 1; // Para el espacio
-        total_length += exec_ft_strlen(token->params[i]);
-        i++;
-    }
-    total_length += 1;
-    char *result = (char *)malloc(total_length);
-    if (!result)
-        return NULL;
-    result[0] = '\0';
-    exec_ft_strlcat(result, token->command, total_length);
-    i = 0;
-    while (i < token->nparams)
-    {
-        exec_ft_strlcat(result, " ", total_length);
-        exec_ft_strlcat(result, token->params[i], total_length);
-        i++;
-    }
-    return result;
+	if (!token || !token->command)
+		return (NULL);
+	total_length = exec_ft_strlen(token->command);
+	i = 0;
+	while (i < token->nparams)
+	{
+		total_length += 1;
+		total_length += exec_ft_strlen(token->params[i]);
+		i++;
+	}
+	total_length += 1;
+	result = (char *)malloc(total_length);
+	if (!result)
+		return (NULL);
+	result[0] = '\0';
+	exec_ft_strlcat(result, token->command, total_length);
+	i = 0;
+	while (i < token->nparams)
+	{
+		exec_ft_strlcat(result, " ", total_length);
+		exec_ft_strlcat(result, token->params[i], total_length);
+		i++;
+	}
+	return (result);
 }
 
-t_return	forking(int pipes[][2], t_shell *shell, char **directories, char **envp)
+t_return	forking(int pipes[][2], t_shell *shell, char **direct, char **envp)
 {
 	int		i;
-	char *chain;;
-	t_return pid_return;
+	char	*chain;
+	t_return	pid_return;
 
 	i = 0;
 	pid_return.pid = -1;
@@ -112,16 +119,29 @@ t_return	forking(int pipes[][2], t_shell *shell, char **directories, char **envp
 	{
 		if (shell->ncomands == 1 && shell->token[0].command != NULL && is_builtin(shell->token[0].command))
 		{
+			int saved_stdin = dup(STDIN_FILENO);
+			int saved_stdout = dup(STDOUT_FILENO);
+			if (saved_stdin == -1 || saved_stdout == -1)
+			{
+				perror("dup");
+				pid_return.use_pid = 2;
+				return (pid_return);
+			}
 			pid_return.return_value = redirect(pipes, &(shell->token[0]), 0, shell->ncomands);
 			if (pid_return.return_value != 0)
 			{
-				pid_return.use_pid = 2; // no hacer waitpid
+				pid_return.use_pid = 2;
 				return (pid_return);
 			}
-			pid_return.return_value = execute_builtin(shell->token, envp ,shell->env);
-			pid_return.use_pid = 2; // no hacer waitpid
-				return (pid_return);
-    	}
+			pid_return.return_value = execute_builtin(shell->token, envp, shell->env);
+			dup2(saved_stdin, STDIN_FILENO);
+			dup2(saved_stdout, STDOUT_FILENO);
+			close(saved_stdin);
+			close(saved_stdout);
+
+			pid_return.use_pid = 2;
+			return (pid_return);
+		}
 		pid_return.pid = fork();
 		if (pid_return.pid == -1)
 		{
@@ -141,12 +161,12 @@ t_return	forking(int pipes[][2], t_shell *shell, char **directories, char **envp
 				pid_return.return_value = redirect(pipes, &(shell->token[i]), i, shell->ncomands);
 				if (pid_return.return_value != 0)
 					exit(pid_return.return_value);
-				if (is_builtin(shell->token[i].command)) //en builtins si hay dos errores se prioriza el de redirect
+				if (is_builtin(shell->token[i].command))
 				{
 					pid_return.return_value = execute_builtin(&(shell->token[i]), envp, shell->env);
 					exit(pid_return.return_value);
 				}
-				execute(chain, directories, envp);
+				execute(chain, direct, envp);
 			}
 		}
 		i++;
@@ -154,18 +174,47 @@ t_return	forking(int pipes[][2], t_shell *shell, char **directories, char **envp
 	return (pid_return);
 }
 
-void	try(char *full_path, char **commands, char **directories, char **envp)
+void try(char *full_path, char **commands, char **directories, char **envp)
 {
-	if (access(full_path, X_OK) == 0)
-	{
-		execve(full_path, commands, envp);
-		perror("execve error");
-		free(full_path);
-		free_array(commands);
-		free_array(directories);
-		exit(EXIT_FAILURE);
-	}
-	free(full_path);
+    struct stat st;
+
+    // Obtener información del archivo
+    if (stat(full_path, &st) == 0)
+    {
+        // 1. Verificar si es un directorio
+        if (S_ISDIR(st.st_mode))
+        {
+            write(STDERR_FILENO, full_path, exec_ft_strlen(full_path));
+            write(STDERR_FILENO, ": Is a directory\n", 17);
+            free(full_path);
+            free_array(commands);
+            free_array(directories);
+            exit(126);
+        }
+
+        // 2. Verificar si tiene permisos de ejecución
+        if (st.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH))
+        {
+            // Intentar ejecutar el archivo
+            execve(full_path, commands, envp);
+            perror("execve error");
+            free(full_path);
+            free_array(commands);
+            free_array(directories);
+            exit(126);
+        }
+
+        // 3. Si no tiene permisos de ejecución, imprimir "Permission denied"
+        write(STDERR_FILENO, full_path, exec_ft_strlen(full_path));
+        write(STDERR_FILENO, ": Permission denied\n", 20);
+        free(full_path);
+        free_array(commands);
+        free_array(directories);
+        exit(126);
+    }
+
+    // Si no existe, simplemente liberamos la memoria y seguimos probando otras rutas.
+    free(full_path);
 }
 
 char	**handle_params_allocation(char *command, char **directories)
