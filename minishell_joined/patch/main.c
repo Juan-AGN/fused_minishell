@@ -80,7 +80,7 @@ int main(int argc, char **argv, char **envp)
 		}
 		if (minishell->error != 0)
 		{
-			ft_printf("Error\n");
+			ft_printf("Quote error\n");
 			minishell->error = 0;
 		}
 		ft_free_tokens(minishell, minishell->token);

@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 11:57:54 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/06 13:03:15 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/12 14:53:41 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,8 @@ int			ft_specialchar_if(char c);
 int ft_maintoken(t_shell *minishell, char *input);
 //	aux
 int	ft_comands(char *input);
+
+int	ft_return_lenght(char *str);
 
 int	ft_count_inout(char *input);
 

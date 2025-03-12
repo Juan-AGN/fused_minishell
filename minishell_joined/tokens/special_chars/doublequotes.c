@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 10:31:23 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/02 12:42:34 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/12 14:45:56 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ int	ft_return_lenght(char *str)
 	int	i;
 
 	i = 0;
+	if (str[i] == '?')
+		return (i + 1);
 	if (str[i] == '$')
 		return (i + 1);
 	while (str[i] != 34 && str[i] != '\0' && str[i] != '$' && str[i] != 39
