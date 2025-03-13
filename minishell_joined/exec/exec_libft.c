@@ -1,5 +1,16 @@
-#include "exteroided.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_libft.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: luialvar <luialvar@student.42malaga.com>   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/13 11:17:39 by luialvar          #+#    #+#             */
+/*   Updated: 2025/03/13 11:17:46 by luialvar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "exteroided.h"
 
 size_t	exec_ft_strlcat(char *dst, const char *src, size_t size)
 {
