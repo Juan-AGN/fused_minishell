@@ -72,9 +72,8 @@ int main(int argc, char **argv, char **envp)
 			add_history(minishell->input);
 		else
 			printf("");
-		ret = ft_maintoken(minishell, minishell->input);
 		free(cwd);
-		ft_free_for_exit(minishell);
+		ret = ft_maintoken(minishell, minishell->input);
 		return 1;
 		if (minishell->input != NULL && ret == 0 && minishell->error == 0)
 			handle_shell(minishell);
