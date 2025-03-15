@@ -74,7 +74,6 @@ int main(int argc, char **argv, char **envp)
 			printf("");
 		free(cwd);
 		ret = ft_maintoken(minishell, minishell->input);
-		return 1;
 		if (minishell->input != NULL && ret == 0 && minishell->error == 0)
 			handle_shell(minishell);
 		if (minishell->error != 0)
