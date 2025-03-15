@@ -45,7 +45,6 @@ int	ft_search_space(char *str)
 
 int main(int argc, char **argv, char **envp)
 {
-	char	*input;
 	char	*cwd = NULL;
 	t_shell	*minishell;
 	int ret;
@@ -60,32 +59,33 @@ int main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		cwd = getcwd(NULL, 0); //determina sola la memoria
-		cwd = ft_strjoin(cwd, "~$: ");
-		if (cwd != NULL)
-			input = readline(cwd);
+		minishell->cwd = ft_strjoin(cwd, "~$: ");
+		if (minishell->cwd != NULL)
+			minishell->input = readline(minishell->cwd);
 		else
 		{
 			free(cwd);
 			perror("getcwd() error");
 			return 1;
 		}
-		if (ft_search_space(input) == 0)
-			add_history(input);
+		if (ft_search_space(minishell->input) == 0)
+			add_history(minishell->input);
 		else
 			printf("");
-		ret = ft_maintoken(minishell, input);
-		if (input != NULL && ret == 0 && minishell->error == 0)
-		{
+		ret = ft_maintoken(minishell, minishell->input);
+		free(cwd);
+		ft_free_for_exit(minishell);
+		return 1;
+		if (minishell->input != NULL && ret == 0 && minishell->error == 0)
 			handle_shell(minishell);
-		}
 		if (minishell->error != 0)
 		{
 			ft_printf("Quote error\n");
 			minishell->error = 0;
 		}
 		ft_free_tokens(minishell, minishell->token);
-		free(input);
-		free(cwd);
+		free(minishell->input);
+		free(minishell->cwd);
 	}
 	ft_plstclear(minishell->env);
 	free(minishell->env);

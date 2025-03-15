@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 11:57:54 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/12 14:53:41 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/15 12:54:48 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ typedef struct t_shell
 	struct t_token	*token;
 	int				ncomands;
 	char			*exit_code;
+	char			*input;
+	char			*cwd;
 	int				error;
 }	t_shell;
 
@@ -78,6 +80,8 @@ t_shell		*ft_mass_free(void *value1, void *value2, void *value3, void *value4);
 int			ft_plstclear(t_env **lst);
 
 void		ft_free_tokens(t_shell *minishell, t_token *token);
+
+void		ft_free_for_exit(t_shell *minishell);
 //end free
 
 //miscelanious
