@@ -35,7 +35,7 @@ int	ft_search_space(char *str)
 {
 	while (*str)
 	{
-		if (*str <= 32)
+		if (*str <= 32 && *str >= 1)
 			str ++;
 		else
 			return (0);

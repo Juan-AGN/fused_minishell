@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 16:39:23 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/12 15:01:48 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/15 17:15:40 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ char	*ft_joiner(t_shell *minishell, char *str, char *tojoin)
 
 int	ft_conditional_plain(char *str, int i)
 {
-	if (str[i] == 34 || str[i] <= 32 || str[i] == '$' || str[i] == 39
-		|| str[i] == '>' || str[i] == '<' || str[i] == '|')
+	if (str[i] == 34 || (str[i] >= 0 && str[i] <= 32) || str[i] == '$'
+		|| str[i] == 39 || str[i] == '>' || str[i] == '<' || str[i] == '|')
 	{
 		if (str[i] == '$')
 		{
