@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 15:35:38 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/15 17:15:39 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/18 19:11:00 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,9 @@ void	ft_free_in(int ninfiles, t_token *token)
 {
 	while (ninfiles != -1)
 	{
-		if (token->infiles[ninfiles] != NULL)
-			free(token->infiles[ninfiles]);
+		if (token->infiles != NULL)
+			if (token->infiles[ninfiles] != NULL)
+				free(token->infiles[ninfiles]);
 		ninfiles --;
 	}
 	if (token->infiles != NULL)
@@ -40,8 +41,9 @@ void	ft_free_out(int noutfiles, t_token *token)
 {
 	while (noutfiles != -1)
 	{
-		if (token->outfiles[noutfiles] != NULL)
-			free(token->outfiles[noutfiles]);
+		if (token->outfiles != NULL)
+			if (token->outfiles[noutfiles] != NULL)
+				free(token->outfiles[noutfiles]);
 		noutfiles --;
 	}
 	if (token->outfiles != NULL)

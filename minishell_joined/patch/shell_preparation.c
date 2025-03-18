@@ -6,13 +6,13 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 16:23:02 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/06 13:14:55 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/18 19:19:47 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-t_env	*ft_dup_env(char *name) 
+t_env	*ft_dup_env(char *name)
 {
 	char	*raw_content;
 	char	*dupped;
@@ -37,7 +37,7 @@ t_env	*ft_dup_env(char *name)
 	return (list);
 }
 
-int			ft_count_env(char **envp)
+int	ft_count_env(char **envp)
 {
 	int	i;
 
@@ -50,7 +50,7 @@ int			ft_count_env(char **envp)
 	return (i);
 }
 
-int	ft_prep_env(char **envp, t_shell *minishell) 
+int	ft_prep_env(char **envp, t_shell *minishell)
 {
 	int		i;
 	t_env	*aux;
@@ -79,7 +79,7 @@ int	ft_prep_env(char **envp, t_shell *minishell)
 
 char	*ft_get_env(char *str)
 {
-	int	i;
+	int		i;
 	char	*toreturn;
 
 	i = ft_strlen(str) - ft_strlen(ft_strchr(str, '='));

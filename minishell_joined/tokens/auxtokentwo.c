@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 15:38:11 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/18 14:01:59 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/18 19:17:48 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,17 +58,14 @@ void	ft_aux_in(t_shell *minishell, t_token *token, char *input, int i)
 
 	u = 0;
 	o = 0;
-	if (token->infiles == NULL)
-	{
+	if (token->infiles == NULL && minishell->error == -5)
 		token->infiles = ft_alloc_inout(minishell, ft_inoutcounter(&input[i],
 					'<'), token, 1);
-	}
-	if (token->inout == NULL)
-	{
+	if (token->inout == NULL && minishell->error == -5)
 		token->inout = ft_ord_inout(minishell, ft_inoutcounter(&input[i], '<')
 				+ ft_inoutcounter(&input[i], '>'), token);
-	}
-	if (token->infiles == NULL || token->inout == NULL)
+	if (token->infiles == NULL || token->inout == NULL
+		|| minishell->error == -5)
 		return ;
 	while (token->ninfiles - ft_inoutcounter(&input[i], '<') > u)
 		u ++;
@@ -85,17 +82,14 @@ void	ft_aux_out(t_shell *minishell, t_token *token, char *input, int i)
 
 	u = 0;
 	o = 0;
-	if (token->outfiles == NULL)
-	{
+	if (token->outfiles == NULL && minishell->error == -5)
 		token->outfiles = ft_alloc_inout(minishell, ft_inoutcounter(&input[i],
 					'>'), token, 2);
-	}
-	if (token->inout == NULL)
-	{
+	if (token->inout == NULL && minishell->error != -5)
 		token->inout = ft_ord_inout(minishell, ft_inoutcounter(&input[i], '<')
 				+ ft_inoutcounter(&input[i], '>'), token);
-	}
-	if (token->outfiles == NULL || token->inout == NULL)
+	if (token->outfiles == NULL || token->inout == NULL
+		|| minishell->error == -5)
 		return ;
 	while (token->noutfiles - ft_inoutcounter(&input[i], '>') > u)
 		u ++;

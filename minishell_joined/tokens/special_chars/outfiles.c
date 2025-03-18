@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:04:24 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/01/29 16:50:23 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/18 19:15:25 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*ft_handle_out(t_shell *minishell, char *input)
 	type = 0;
 	while (input[type] == '>')
 		type ++;
-	if (type > 2)
+	if (type > 2 || minishell->error == -5)
 		return (NULL);
 	input += type;
 	while (*input >= 1 && *input <= 32)
