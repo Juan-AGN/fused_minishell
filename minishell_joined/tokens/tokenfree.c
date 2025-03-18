@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/20 15:35:38 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/01/29 15:36:48 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/15 17:15:39 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ void	ft_free_tokens(t_shell *minishell, t_token *token)
 			ft_free_params(token[commands].nparams - 1, &token[commands]);
 			ft_free_in(token[commands].ninfiles - 1, &token[commands]);
 			ft_free_out(token[commands].noutfiles - 1, &token[commands]);
+			if (token[commands].inout != NULL)
+				free(token[commands].inout);
 			commands --;
 		}
 		free(token);

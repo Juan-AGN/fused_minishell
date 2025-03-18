@@ -1,8 +1,8 @@
 #include "../include/minishell.h"
 
-void	handler(int sig)
+void	handler(int signal)
 {
-	if (sig == SIGINT)
+	if (signal == SIGINT)
 	{
 		rl_on_new_line();
 		rl_redisplay();
@@ -12,7 +12,7 @@ void	handler(int sig)
 		rl_on_new_line();
 		rl_redisplay();
 	}
-	else if (sig == SIGQUIT)
+	else if (signal == SIGQUIT)
 	{
 		rl_on_new_line();
 		rl_replace_line("  ", 0);
@@ -20,22 +20,22 @@ void	handler(int sig)
 	}
 }
 
-void	if_signal(void)
+void	ft_signal(void)
 {
-	struct sigaction	sig;
+	struct sigaction	signal;
 
-	sig.sa_handler = &handler;
-	sig.sa_flags = SA_RESTART;
-	sigemptyset(&sig.sa_mask);
-	sigaction(SIGINT, &sig, NULL);
-	sigaction(SIGQUIT, &sig, NULL);
+	signal.sa_handler = &handler;
+	signal.sa_flags = SA_RESTART;
+	sigemptyset(&signal.sa_mask);
+	sigaction(SIGINT, &signal, NULL);
+	sigaction(SIGQUIT, &signal, NULL);
 }
 
 int	ft_search_space(char *str)
 {
 	while (*str)
 	{
-		if (*str <= 32)
+		if (*str <= 32 && *str >= 1)
 			str ++;
 		else
 			return (0);
@@ -45,7 +45,6 @@ int	ft_search_space(char *str)
 
 int main(int argc, char **argv, char **envp)
 {
-	char	*input;
 	char	*cwd = NULL;
 	t_shell	*minishell;
 	int ret;
@@ -56,27 +55,35 @@ int main(int argc, char **argv, char **envp)
 		return 100;
 	minishell = ft_prepare_values(envp);
 	rl_redisplay();
-	if_signal();
+	ft_signal();
 	while (1)
 	{
 		cwd = getcwd(NULL, 0); //determina sola la memoria
-		cwd = ft_strjoin(cwd, "~$: ");
-		if (cwd != NULL)
-			input = readline(cwd);
+		minishell->cwd = ft_strjoin(cwd, "~$: ");
+		if (minishell->cwd != NULL)
+		{
+			while (!minishell->input)
+				minishell->input = readline(minishell->cwd);
+		}
 		else
 		{
 			free(cwd);
 			perror("getcwd() error");
 			return 1;
 		}
-		if (ft_search_space(input) == 0)
-			add_history(input);
+		if (ft_search_space(minishell->input) == 0)
+			add_history(minishell->input);
 		else
 			printf("");
-		ret = ft_maintoken(minishell, input);
-		if (input != NULL && ret == 0 && minishell->error == 0)
-		{
+		free(cwd);
+		ret = ft_maintoken(minishell, minishell->input);
+		if (minishell->input != NULL && ret == 0 && minishell->error == 0)
 			handle_shell(minishell);
+		if (minishell->error == -5)
+		{
+			ft_free_for_exit(minishell);
+			ft_printf("Malloc error\n");
+			exit(-5);
 		}
 		if (minishell->error != 0)
 		{
@@ -84,8 +91,9 @@ int main(int argc, char **argv, char **envp)
 			minishell->error = 0;
 		}
 		ft_free_tokens(minishell, minishell->token);
-		free(input);
-		free(cwd);
+		free(minishell->input);
+		minishell->input = NULL;
+		free(minishell->cwd);
 	}
 	ft_plstclear(minishell->env);
 	free(minishell->env);
