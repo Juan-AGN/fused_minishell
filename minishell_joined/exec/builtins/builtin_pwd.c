@@ -16,7 +16,7 @@ void	builtin_pwd(void)
 {
 	char	*cwd;
 
-	cwd = getcwd(NULL, 0); // Solicita memoria dinámica para almacenar el directorio actual
+	cwd = getcwd(NULL, 0);
 	if (cwd != NULL)
 	{
 		write(1, cwd, ft_strrlen(cwd));

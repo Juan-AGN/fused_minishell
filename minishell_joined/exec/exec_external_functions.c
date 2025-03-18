@@ -117,11 +117,13 @@ char	*token_to_str(const t_token *token)
 	return (result);
 }
 
-t_return	forking(int pipes[][2], t_shell *shell, char **direct, char **envp)
+t_ret	forking(int pipes[][2], t_shell *shell, char **direct, char **envp)
 {
 	int		i;
 	char	*chain;
-	t_return	pid_return;
+	t_ret	pid_return;
+	int		saved_stdin;
+	int		saved_stdout;
 
 	i = 0;
 	pid_return.pid = -1;
@@ -131,8 +133,8 @@ t_return	forking(int pipes[][2], t_shell *shell, char **direct, char **envp)
 	{
 		if (shell->ncomands == 1 && shell->token[0].command != NULL && is_builtin(shell->token[0].command))
 		{
-			int saved_stdin = dup(STDIN_FILENO);
-			int saved_stdout = dup(STDOUT_FILENO);
+			saved_stdin = dup(STDIN_FILENO);
+			saved_stdout = dup(STDOUT_FILENO);
 			if (saved_stdin == -1 || saved_stdout == -1)
 			{
 				perror("dup");
@@ -150,7 +152,6 @@ t_return	forking(int pipes[][2], t_shell *shell, char **direct, char **envp)
 			dup2(saved_stdout, STDOUT_FILENO);
 			close(saved_stdin);
 			close(saved_stdout);
-
 			pid_return.use_pid = 2;
 			return (pid_return);
 		}
@@ -186,47 +187,47 @@ t_return	forking(int pipes[][2], t_shell *shell, char **direct, char **envp)
 	return (pid_return);
 }
 
-void try(char *full_path, char **commands, char **directories, char **envp)
+void	try(char *full_path, char **commands, char **directories, char **envp)
 {
-    struct stat st;
+	struct	stat st;
 
-    // Obtener información del archivo
-    if (stat(full_path, &st) == 0)
-    {
-        // 1. Verificar si es un directorio
-        if (S_ISDIR(st.st_mode))
-        {
-            write(STDERR_FILENO, full_path, exec_ft_strlen(full_path));
-            write(STDERR_FILENO, ": Is a directory\n", 17);
-            free(full_path);
-            free_array(commands);
-            free_array(directories);
-            exit(126);
-        }
+	// Obtener información del archivo
+	if (stat(full_path, &st) == 0)
+	{
+		// 1. Verificar si es un directorio
+		if (S_ISDIR(st.st_mode))
+		{
+			write(STDERR_FILENO, full_path, exec_ft_strlen(full_path));
+			write(STDERR_FILENO, ": Is a directory\n", 17);
+			free(full_path);
+			free_array(commands);
+			free_array(directories);
+			exit(126);
+		}
 
-        // 2. Verificar si tiene permisos de ejecución
-        if (st.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH))
-        {
-            // Intentar ejecutar el archivo
-            execve(full_path, commands, envp);
-            perror("execve error");
-            free(full_path);
-            free_array(commands);
-            free_array(directories);
-            exit(126);
-        }
+		// 2. Verificar si tiene permisos de ejecución
+		if (st.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH))
+		{
+			// Intentar ejecutar el archivo
+			execve(full_path, commands, envp);
+			perror("execve error");
+			free(full_path);
+			free_array(commands);
+			free_array(directories);
+			exit(126);
+		}
 
-        // 3. Si no tiene permisos de ejecución, imprimir "Permission denied"
-        write(STDERR_FILENO, full_path, exec_ft_strlen(full_path));
-        write(STDERR_FILENO, ": Permission denied\n", 20);
-        free(full_path);
-        free_array(commands);
-        free_array(directories);
-        exit(126);
-    }
+		// 3. Si no tiene permisos de ejecución, imprimir "Permission denied"
+		write(STDERR_FILENO, full_path, exec_ft_strlen(full_path));
+		write(STDERR_FILENO, ": Permission denied\n", 20);
+		free(full_path);
+		free_array(commands);
+		free_array(directories);
+		exit(126);
+	}
 
-    // Si no existe, simplemente liberamos la memoria y seguimos probando otras rutas.
-    free(full_path);
+	// Si no existe, simplemente liberamos la memoria y seguimos probando otras rutas.
+	free(full_path);
 }
 
 char	**handle_params_allocation(char *command, char **directories)
@@ -242,7 +243,6 @@ char	**handle_params_allocation(char *command, char **directories)
 	}
 	return (commands);
 }
-
 
 /*
 Se le pasa el comando entero junto a sus posibles parametros de ejecucion,
@@ -311,7 +311,6 @@ char	*build_full_path(const char *directory, const char *command)
 	char	*full_path;
 	char	*cwd;
 
-	// Si command ya es una ruta absoluta, se copia directamente
 	if (command[0] == '/')
 	{
 		full_path = malloc(exec_ft_strlen(command) + 1);
@@ -321,10 +320,9 @@ char	*build_full_path(const char *directory, const char *command)
 		return (full_path);
 	}
 
-	// Si es una ruta relativa con "./" o "../", convertirla a absoluta
 	if (command[0] == '.' && (command[1] == '/' || command[1] == '.'))
 	{
-		cwd = getcwd(NULL, 0);  // getcwd asigna memoria automáticamente
+		cwd = getcwd(NULL, 0);
 		if (!cwd)
 		{
 			perror("getcwd");
@@ -382,7 +380,6 @@ int	returning(int ncom, pid_t pid)
 	return (exit_code);
 }
 
-
 void	here_doc_child(char *limiter, int fd)
 {
 	char	*line;
@@ -403,6 +400,5 @@ void	here_doc_child(char *limiter, int fd)
 		write(fd, line, exec_ft_strlen(line));
 		free(line);
 	}
-	return;
+	return ;
 }
-

@@ -11,14 +11,12 @@
 /* ************************************************************************** */
 
 #include "builtins.h"
-
 void	builtin_echo(t_token *command)
 {
-	int		i;
-	int		newline;
-	int 	j;
+	int	i;
+	int	newline;
+	int	j;
 
-	j = 1;
 	i = 0;
 	newline = 1;
 	if (command->nparams == 0)
@@ -26,14 +24,18 @@ void	builtin_echo(t_token *command)
 		write(1, "\n", 1);
 		return;
 	}
-	while (command->params[i] && command->params[i][0] == '-' && command->params[i][1] == 'n')
+	while (i < command->nparams && command->params[i][0] == '-')
 	{
+		j = 1;
 		while (command->params[i][j] == 'n')
 			j++;
-		if (command->params[i][j] != '\0')
+		if (command->params[i][j] == '\0' && j > 1)
+		{
+			newline = 0;
+			i++;
+		}
+		else
 			break;
-		newline = 0;
-		i++;
 	}
 	while (i < command->nparams)
 	{
