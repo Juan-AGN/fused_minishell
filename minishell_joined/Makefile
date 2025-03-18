@@ -6,7 +6,7 @@
 #    By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/13 16:34:55 by juan-ant          #+#    #+#              #
-#    Updated: 2025/02/25 17:45:15 by juan-ant         ###   ########.fr        #
+#    Updated: 2025/03/13 11:29:21 by luialvar         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ NAME = minishell
 
 FILES = aux/string_aux.c patch/main.c patch/shell_preparation.c list/lstcontrol.c list/lstcontrol_2.c aux/free_mem.c tokens/maintoken.c tokens/auxtokentwo.c tokens/tokenfree.c tokens/auxtoken.c tokens/auxtokenifs.c tokens/special_chars/singlequotes.c tokens/special_chars/doublequotes.c tokens/special_chars/handleplain.c tokens/special_chars/infiles.c tokens/special_chars/outfiles.c
 
-EXEC = exec/exteroided_pipex.c exec/builtins/builtin_cd.c exec/builtins/builtin_echo.c exec/builtins/builtin_env.c exec/builtins/builtin_exit.c exec/builtins/builtin_export.c exec/builtins/builtin_pwd.c exec/builtins/builtin_unset.c exec/builtins/external_functions.c exec/builtins/ft_split.c exec/exec_external_functions.c exec/exec_split.c exec/exec_libft.c exec/gnl.c
+EXEC = exec/exteroided_pipex.c exec/builtins/builtin_cd.c exec/builtins/builtin_echo.c exec/builtins/builtin_env.c exec/builtins/builtin_exit.c exec/builtins/builtin_export.c exec/builtins/builtin_pwd.c exec/builtins/builtin_unset.c exec/builtins/external_functions.c exec/builtins/ft_split.c exec/exec_external_functions.c exec/exec_split.c exec/exec_libft.c exec/gnl.c exec/exec_libft2.c
 
 OBJ = $(FILES:%.c=%.o)
 

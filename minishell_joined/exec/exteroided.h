@@ -13,7 +13,7 @@
 #ifndef EXTEROIDED_H
 # define EXTEROIDED_H
 
-#include "builtins/builtins.h"
+# include "builtins/builtins.h"
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -25,22 +25,22 @@
 #  define BUFFER_SIZE 42
 # endif
 
-typedef struct t_return
+typedef struct t_ret
 {
 	pid_t		pid;
-	int 		return_value;
+	int			return_value;
 	int			use_pid;
-}	t_return;
+}	t_ret;
 
-void    handle_shell(t_shell *shell);
+void	handle_shell(t_shell *shell);
 size_t	exec_ft_strlen(const char *s);
 size_t	exec_ft_strlcat(char *dst, const char *src, size_t size);
 void	exec_free_array(char **directories);
-char **exec_convert_env_to_array(t_shell *shell);
+char	**exec_convert_env_to_array(t_shell *shell);
 void	create_pipes(int pipes[][2], int ncom);
 char	**exec_split(char const *s, char c);
-t_return	forking(int pipes[][2], t_shell *shell, char **direct, char **envp);
-int	returning(int ncom, pid_t pid);
+t_ret	forking(int pipes[][2], t_shell *shell, char **direct, char **envp);
+int		returning(int ncom, pid_t pid);
 char	**find_directories(char **envp);
 int		redirect(int pipes[][2], t_token *token, int current, int ncomands);
 void	execute(char *command, char **directories, char **envp);
@@ -55,7 +55,7 @@ char	*exec_ft_strchr(const char *s, int c);
 char	*exec_ft_strjoin(char const *s1, char const *s2);
 char	*exec_get_next_line(int fd);
 char	*ft_itoa(int n);
-int is_builtin(char *builtin);
-int	execute_builtin(t_token   *command, char ** envp, t_env **env);
+int		is_builtin(char *builtin);
+int		execute_builtin(t_token *command, char **envp, t_env **env);
 
 #endif
