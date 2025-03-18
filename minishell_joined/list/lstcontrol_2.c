@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/27 13:56:43 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/02 13:03:00 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/12 14:33:38 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ char	*ft_plstsearch(t_env *lst, char *name,  t_shell *minishell)
 {
 	if (lst == NULL)
 		return ("");
-	if (ft_strncmp(name, "?", ft_strlen(name)) == 0)
+	if (ft_strlen(name) == 0)
+		return ("$");
+	if (ft_strncmp(name, "?", 1) == 0)
 		return (minishell->exit_code);
 	while (lst->next != NULL)
 	{
