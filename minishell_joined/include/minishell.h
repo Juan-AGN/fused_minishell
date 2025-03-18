@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 11:57:54 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/15 12:54:48 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/18 13:51:22 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,15 +74,23 @@ t_env		*ft_lstadvance(t_env *lst, int i);
 char		*ft_plstsearch(t_env *lst, char *name, t_shell *minishell);
 //end list
 
-//free
+//free n malloc
+void		*ft_safe_malloc(int n, t_shell *minishell);
+
 t_shell		*ft_mass_free(void *value1, void *value2, void *value3, void *value4);
 
 int			ft_plstclear(t_env **lst);
 
+char		*ft_free(char *pointer);
+
+void		*ft_error_mini(t_shell *minishell, int err, int ex_cod, int mod);
+
+int			ft_error_mini_n(t_shell *minishell, int err, int ex_cod, int mod);
+
 void		ft_free_tokens(t_shell *minishell, t_token *token);
 
 void		ft_free_for_exit(t_shell *minishell);
-//end free
+//end free n malloc
 
 //miscelanious
 char		*ft_get_env(char *str);
@@ -124,7 +132,7 @@ char	*ft_handledoubles(t_shell *minishell, char *str, char *tojoin);
 //end of double ""
 
 //single ''
-char	*ft_handlesingles(char *str);
+char	*ft_handlesingles(t_shell *minishell, char *str);
 //end of single ''
 
 //handle infiles

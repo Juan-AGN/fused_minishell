@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 17:08:54 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/01/29 16:39:17 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/18 13:35:17 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,25 @@ t_shell	*ft_mass_free(void *value1, void *value2, void *value3, void *value4)
 	if (value4 != NULL)
 		free(value4);
 	return (NULL);
+}
+
+void	ft_free_for_exit(t_shell *minishell)
+{
+	ft_free_tokens(minishell, minishell->token);
+	if (minishell->env != NULL)
+	{
+		ft_plstclear(minishell->env);
+		free(minishell->env);
+	}
+	if (minishell->cwd != NULL)
+		free(minishell->cwd);
+	if (minishell->input != NULL)
+		free(minishell->input);
+	if (minishell->exit_code != NULL)
+		free(minishell->exit_code);
+	if (minishell != NULL)
+		free(minishell);
+	rl_clear_history();
 }
 
 int	ft_plstclear(t_env **lst)
@@ -45,4 +64,12 @@ int	ft_plstclear(t_env **lst)
 	}
 	*lst = NULL;
 	return (-1);
+}
+
+char	*ft_free(char *pointer)
+{
+	free(pointer);
+	pointer = NULL;
+
+	return (NULL);
 }

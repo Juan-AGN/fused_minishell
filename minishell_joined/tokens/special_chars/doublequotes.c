@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 10:31:23 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/12 15:15:08 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/18 13:43:35 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,11 @@ char	*ft_joinenv_doubles(t_shell *minishell, char *str, char *tojoin)
 	i = ft_return_lenght(str);
 	env = malloc(sizeof(char) * (i + 1));
 	if (env == NULL)
-		return (NULL);
+		return (ft_error_mini(minishell, -5, 0, 2));
 	ft_strlcpy(env, str, i + 1);
 	joined = ft_strjoinenv(minishell, tojoin, env);
 	if (joined == NULL)
-		return (NULL);
+		return (ft_error_mini(minishell, -5, 0, 2));
 	if ((str[i] != '"' && str[i] != '\0') || str[i] == '$')
 		env = joined;
 	if (str[i] != '"' && str[i] != '\0')
@@ -87,12 +87,12 @@ char	*ft_handledoubles(t_shell *minishell, char *str, char *tojoin)
 		i ++;
 	current = malloc(sizeof(char) * (i + 1));
 	if (current == NULL)
-		return (NULL);
+		return (ft_error_mini(minishell, -5, 0, 2));
 	ft_strlcpy(current, str, i + 1);
 	joined = ft_strjoin(tojoin, current);
 	free(current);
 	if (joined == NULL)
-		return (NULL);
+		return (ft_error_mini(minishell, -5, 0, 2));
 	if (str[i] == '$')
 	{
 		current = joined;

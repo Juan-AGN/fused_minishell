@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 12:41:23 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/15 17:11:44 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/18 13:47:16 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,7 @@ int	ft_createcommand(t_shell *minishell, t_token *token, char *input, int i)
 		token->command = ft_handleplain(minishell, &input[i], NULL);
 		i += ft_count_token(&input[i]);
 		token->nparams = ft_params(&input[i]);
-		if (ft_params(&input[i]) != 0)
-			token->params = malloc(sizeof(char *) * ft_params(&input[i]));
+		token->params = ft_safe_malloc(token->nparams, minishell);
 		if (token->command == NULL)
 			return (i);
 	}
@@ -56,7 +55,7 @@ int	ft_alloctoken(int i, t_shell *minishell)
 	minishell->ncomands = i;
 	minishell->token = malloc(sizeof(t_token) * i);
 	if (minishell->token == NULL)
-		return (-1);
+		return (ft_error_mini_n(minishell, -5, 0, 2));
 	while (u < i)
 	{
 		minishell->token[u].command = NULL;

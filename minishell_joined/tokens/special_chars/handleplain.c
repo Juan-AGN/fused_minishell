@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 16:39:23 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/15 17:15:40 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/18 13:43:11 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,11 @@ char	*ft_joinenv_plain(t_shell *minishell, char *str, char *tojoin)
 	i = ft_return_lenght(str);
 	env = malloc(sizeof(char) * (i + 1));
 	if (env == NULL)
-		return (NULL);
+		return (ft_error_mini(minishell, -5, 0, 2));
 	ft_strlcpy(env, str, i + 1);
 	joined = ft_strjoinenv(minishell, tojoin, env);
 	if (joined == NULL)
-		return (NULL);
+		return (ft_error_mini(minishell, -5, 0, 2));
 	return (joined);
 }
 
@@ -35,7 +35,7 @@ char	*ft_joiner(t_shell *minishell, char *str, char *tojoin)
 	char	*res;
 
 	if (str[0] == 39)
-		res = ft_handlesingles(&str[1]);
+		res = ft_handlesingles(minishell, &str[1]);
 	else if (str[0] == 34)
 		res = ft_handledoubles(minishell, &str[1], NULL);
 	else if (str[0] == '$')
@@ -76,7 +76,7 @@ char	*ft_plain_cases(t_shell *minishell, char *str, char *tojoin)
 	i = 1;
 	res = ft_joiner(minishell, str, tojoin);
 	if (res == NULL)
-		return (NULL);
+		return (ft_error_mini(minishell, -5, 0, 2));
 	if (str[0] == '$')
 		i += ft_return_lenght(str + i);
 	else
@@ -103,12 +103,12 @@ char	*ft_handleplain(t_shell *minishell, char *str, char *tojoin)
 		i ++;
 	current = malloc(sizeof(char) * (i + 1));
 	if (current == NULL)
-		return (NULL);
+		return (ft_error_mini(minishell, -5, 0, 2));
 	ft_strlcpy(current, str, i + 1);
 	joined = ft_strjoin(tojoin, current);
 	free(current);
 	if (joined == NULL)
-		return (NULL);
+		return (ft_error_mini(minishell, -5, 0, 2));
 	if (ft_spcharparams_if(str[i]) == 0)
 		joined = ft_plain_cases(minishell, &str[i], joined);
 	return (joined);

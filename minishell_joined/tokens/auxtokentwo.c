@@ -6,13 +6,13 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 15:38:11 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/15 17:15:38 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/18 14:01:59 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-char	**ft_ord_inout(int i, t_token *token)
+char	**ft_ord_inout(t_shell *minishell, int i, t_token *token)
 {
 	char	**toret;
 	int		u;
@@ -21,7 +21,7 @@ char	**ft_ord_inout(int i, t_token *token)
 	token->ninout = i;
 	toret = malloc(sizeof(char *) * i);
 	if (toret == NULL)
-		return (NULL);
+		return (ft_error_mini(minishell, -5, 0, 2));
 	while (u != i)
 	{
 		toret[u] = NULL;
@@ -30,7 +30,7 @@ char	**ft_ord_inout(int i, t_token *token)
 	return (toret);
 }
 
-char	**ft_alloc_inout(int i, t_token *token, int mod)
+char	**ft_alloc_inout(t_shell *minishell, int i, t_token *token, int mod)
 {
 	char	**toret;
 	int		u;
@@ -42,7 +42,7 @@ char	**ft_alloc_inout(int i, t_token *token, int mod)
 		token->noutfiles = i;
 	toret = malloc(sizeof(char *) * i);
 	if (toret == NULL)
-		return (NULL);
+		return (ft_error_mini(minishell, -5, 0, 2));
 	while (u != i)
 	{
 		toret[u] = NULL;
@@ -60,14 +60,16 @@ void	ft_aux_in(t_shell *minishell, t_token *token, char *input, int i)
 	o = 0;
 	if (token->infiles == NULL)
 	{
-		token->infiles = ft_alloc_inout(ft_inoutcounter(&input[i],
+		token->infiles = ft_alloc_inout(minishell, ft_inoutcounter(&input[i],
 					'<'), token, 1);
 	}
 	if (token->inout == NULL)
 	{
-		token->inout = ft_ord_inout(ft_inoutcounter(&input[i], '<') +
-					ft_inoutcounter(&input[i], '>'), token);
+		token->inout = ft_ord_inout(minishell, ft_inoutcounter(&input[i], '<')
+				+ ft_inoutcounter(&input[i], '>'), token);
 	}
+	if (token->infiles == NULL || token->inout == NULL)
+		return ;
 	while (token->ninfiles - ft_inoutcounter(&input[i], '<') > u)
 		u ++;
 	while (token->noutfiles - ft_inoutcounter(&input[i], '>') > o)
@@ -85,14 +87,16 @@ void	ft_aux_out(t_shell *minishell, t_token *token, char *input, int i)
 	o = 0;
 	if (token->outfiles == NULL)
 	{
-		token->outfiles = ft_alloc_inout(ft_inoutcounter(&input[i],
+		token->outfiles = ft_alloc_inout(minishell, ft_inoutcounter(&input[i],
 					'>'), token, 2);
 	}
 	if (token->inout == NULL)
 	{
-		token->inout = ft_ord_inout(ft_inoutcounter(&input[i], '<') +
-					ft_inoutcounter(&input[i], '>'), token);
+		token->inout = ft_ord_inout(minishell, ft_inoutcounter(&input[i], '<')
+				+ ft_inoutcounter(&input[i], '>'), token);
 	}
+	if (token->outfiles == NULL || token->inout == NULL)
+		return ;
 	while (token->noutfiles - ft_inoutcounter(&input[i], '>') > u)
 		u ++;
 	while (token->ninfiles - ft_inoutcounter(&input[i], '<') > o)
