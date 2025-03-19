@@ -57,5 +57,6 @@ char	*exec_get_next_line(int fd);
 char	*ft_itoa(int n);
 int		is_builtin(char *builtin);
 int		execute_builtin(t_token *command, char **envp, t_env **env);
+void	ft_free_for_exit(t_shell *minishell);
 
 #endif

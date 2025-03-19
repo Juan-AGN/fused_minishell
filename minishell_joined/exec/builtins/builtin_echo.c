@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "builtins.h"
+
 void	builtin_echo(t_token *command)
 {
 	int	i;
@@ -22,7 +23,7 @@ void	builtin_echo(t_token *command)
 	if (command->nparams == 0)
 	{
 		write(1, "\n", 1);
-		return;
+		return ;
 	}
 	while (i < command->nparams && command->params[i][0] == '-')
 	{
@@ -35,7 +36,7 @@ void	builtin_echo(t_token *command)
 			i++;
 		}
 		else
-			break;
+			break ;
 	}
 	while (i < command->nparams)
 	{

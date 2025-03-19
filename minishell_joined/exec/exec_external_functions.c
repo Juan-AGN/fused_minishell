@@ -117,12 +117,6 @@ char	*token_to_str(const t_token *token)
 	return (result);
 }
 
-void sigint_handler(int signum)
-{
-	(void)signum;
-	write(1, "\n", 1); // Solo salto de línea limpio
-}
-
 t_ret	forking(int pipes[][2], t_shell *shell, char **direct, char **envp)
 {
 	int		i;
@@ -131,15 +125,11 @@ t_ret	forking(int pipes[][2], t_shell *shell, char **direct, char **envp)
 	int		saved_stdin;
 	int		saved_stdout;
 
-	// Ignorar SIGINT al principio para ambos casos (built-ins y externos)
-	signal(SIGINT, SIG_IGN);
-
 	i = 0;
 	pid_return.pid = -1;
 	pid_return.return_value = 0;
 	pid_return.use_pid = 1;
 
-	// === Built-in directamente en el padre ===
 	if (shell->ncomands == 1 && shell->token[0].command != NULL && is_builtin(shell->token[0].command))
 	{
 		saved_stdin = dup(STDIN_FILENO);
@@ -162,9 +152,6 @@ t_ret	forking(int pipes[][2], t_shell *shell, char **direct, char **envp)
 		close(saved_stdin);
 		close(saved_stdout);
 
-		// Restauramos el handler antes de volver al prompt
-		signal(SIGINT, sigint_handler);
-
 		pid_return.use_pid = 2;
 		return (pid_return);
 	}
@@ -180,7 +167,6 @@ t_ret	forking(int pipes[][2], t_shell *shell, char **direct, char **envp)
 		}
 		if (pid_return.pid == 0) // Hijo
 		{
-			signal(SIGINT, SIG_DFL); // Hijo recibe Ctrl+C normalmente
 			if (!shell->token[i].command)
 			{
 				pid_return.return_value = redirect(pipes, &(shell->token[i]), i, shell->ncomands);
@@ -202,9 +188,6 @@ t_ret	forking(int pipes[][2], t_shell *shell, char **direct, char **envp)
 		}
 		i++;
 	}
-
-	// Restauramos señal después de ejecutar hijos
-	signal(SIGINT, sigint_handler);
 
 	return (pid_return);
 }

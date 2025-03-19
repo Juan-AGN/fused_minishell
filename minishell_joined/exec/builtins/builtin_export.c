@@ -43,7 +43,9 @@ void add_to_env(char *key, char *value, t_env **env)
     current = *env;
     while (current != NULL)
     {
-        if (ft_strrncmp(current->name, key, ft_strrlen(key)) == 0)
+        // Comparamos nombres
+        if (ft_strrncmp(current->name, key, ft_strrlen(key)) == 0
+            && ft_strrlen(current->name) == ft_strrlen(key))
         {
             // Si existe, se reemplaza su contenido.
             free(current->content);
@@ -88,9 +90,7 @@ void add_to_env(char *key, char *value, t_env **env)
     {
         t_env *last = *env;
         while (last->next != NULL)
-        {
             last = last->next;
-        }
         last->next = new_node;
     }
 }
@@ -100,10 +100,7 @@ int builtin_export(t_token *command, t_env **env)
 {
     int i;
     char *equal_sign;
-    int return_value;
-    return_value = 0;
-
- 
+    int return_value = 0;
 
     // Si no se reciben parámetros, se listan las variables del entorno.
     if (command->nparams == 0)
@@ -121,37 +118,44 @@ int builtin_export(t_token *command, t_env **env)
     i = 0;
     while (i < command->nparams)
     {
-        // Se busca el carácter '=' para determinar si el parámetro es clave-valor.
+        // Se busca '=' para ver si es "clave=valor"
         equal_sign = ft_sstrchr(command->params[i], '=');
         if (equal_sign)
         {
-            // Se separa temporalmente la clave del valor.
-            *equal_sign = '\0';
+            // Se separa la clave del valor.
+            *equal_sign = '\0';  // Rompe la string en la posición del '='
             if (is_valid_identifier(command->params[i]))
             {
-                // Si el identificador es válido, se añade o actualiza la variable en el entorno.
+                // Añadir o actualizar la variable en el entorno.
                 add_to_env(command->params[i], equal_sign + 1, env);
             }
             else
             {
-                // Si el identificador es inválido, se muestra un mensaje de error.
+                // Identificador inválido => error
                 printf("export: `%s': not a valid identifier\n", command->params[i]);
                 return_value = 1;
             }
-            // Se restaura el carácter '=' en el parámetro original.
-            *equal_sign = '=';
+            *equal_sign = '=';  // Restaura el carácter '=' (por si se requiere)
         }
         else
         {
-            // Si no hay '=', se trata el parámetro como una clave sin valor.
-            if (is_valid_identifier(command->params[i]))
-                add_to_env(command->params[i], "", env);
-            else
-            {
-                // Se muestra un mensaje de error si el identificador es inválido.
-                printf("export: `%s': not a valid identifier\n", command->params[i]);
-                return_value = 1;
-            }
+            /*
+             * Si NO hay '=', ignoramos por completo el parámetro.
+             * Es decir, NO creamos la variable en el entorno.
+             *
+             * DESCOMENTAR si se desea error al no llevar '=':
+             * printf("export: `%s': not a valid assignment (ignored)\n", command->params[i]);
+             * return_value = 1; 
+             *
+             * DESCOMENTAR si se desea error si es un identificador inválido, aunque no haya '=':
+             * if (!is_valid_identifier(command->params[i]))
+             * {
+             *     printf("export: `%s': not a valid identifier\n", command->params[i]);
+             *     return_value = 1;
+             * }
+             *
+             * => Ahora mismo, ni siquiera comprobamos si es válido o no, simplemente lo ignoramos.
+             */
         }
         i++;
     }

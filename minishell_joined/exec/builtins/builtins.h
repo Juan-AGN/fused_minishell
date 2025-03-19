@@ -26,7 +26,12 @@ typedef struct t_shell
 	struct t_token	*token;
 	int				ncomands;
 	char			*exit_code;
+	char			*input;
+	char			*cwd;
 	int				error;
+	char			**envp;
+	char			**directories;
+	int				(*pipes)[2];
 }	t_shell;
 
 typedef struct t_env
@@ -51,7 +56,7 @@ typedef struct t_token
 
 
 void	builtin_echo(t_token *command);
-int	builtin_cd(char **args);
+int	builtin_cd(char **args, t_env **env);
 size_t	ft_strrlen(const char *s);
 int     ft_strrncmp(const char *s1, const char *s2, size_t n);
 void	builtin_pwd(void);
