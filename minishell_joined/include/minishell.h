@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 11:57:54 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/18 13:51:22 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/19 19:53:03 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,9 @@ typedef struct t_shell
 	char			*input;
 	char			*cwd;
 	int				error;
+	char			**envp;
+	char			**directories;
+	int				(*pipes)[2];
 }	t_shell;
 
 typedef struct t_env
