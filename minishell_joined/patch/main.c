@@ -20,6 +20,20 @@ void	handler(int signal)
 	}
 }
 
+void	handler_two(int signal)
+{
+	if (signal == SIGINT)
+	{
+		printf("\n");
+	}
+	else if (signal == SIGQUIT)
+	{
+		rl_on_new_line();
+		rl_replace_line("  ", 0);
+		rl_redisplay();
+	}
+}
+
 void	ft_signal(void)
 {
 	struct sigaction	signal;
@@ -55,9 +69,9 @@ int main(int argc, char **argv, char **envp)
 		return 100;
 	minishell = ft_prepare_values(envp);
 	rl_redisplay();
-	ft_signal();
 	while (1)
 	{
+		ft_signal();
 		cwd = getcwd(NULL, 0); //determina sola la memoria
 		minishell->cwd = ft_strjoin(cwd, "~$: ");
 		if (minishell->cwd != NULL)
@@ -77,7 +91,8 @@ int main(int argc, char **argv, char **envp)
 			printf("");
 		free(cwd);
 		ret = ft_maintoken(minishell, minishell->input);
-		minishell->error = -5;
+		signal(SIGINT, SIG_IGN);
+		signal(SIGINT, &handler_two);
 		if (minishell->input != NULL && ret == 0 && minishell->error == 0)
 			handle_shell(minishell);
 		if (minishell->error == -5)
