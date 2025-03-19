@@ -20,7 +20,7 @@ int	execute_builtin(t_token *command, char **envp, t_env **env)
 	if (ft_strrncmp(command->command, "echo\0", 5) == 0)
 		builtin_echo(command);
 	else if (ft_strrncmp(command->command, "cd\0", 3) == 0)
-		return_status = builtin_cd(command->params);
+		return_status = builtin_cd(command->params, env);
 	else if (ft_strrncmp(command->command, "pwd\0", 4) == 0)
 		builtin_pwd();
 	else if (ft_strrncmp(command->command, "env\0", 4) == 0)
@@ -203,11 +203,8 @@ void	run(t_shell *shell, char **directories, char **envp)
 void	handle_shell(t_shell *shell)
 {
 	char	**directories;
-	char	**envp;
 
-	if (shell->ncomands == 0)
-		return ;
-	envp = exec_convert_env_to_array(shell);
+	shell->envp = exec_convert_env_to_array(shell);
 	if (!envp)
 	{
 		perror("malloc error");
@@ -221,4 +218,15 @@ void	handle_shell(t_shell *shell)
 		return ;
 	}
 	run(shell, directories, envp);
+}
+
+void	exec_free_all(t_shell *shell)
+{
+	ft_free_for_exit(shell);
+	if (shell->pipes != NULL)
+		free(shell->pipes);
+	if (shell->envp != NULL)
+		free_array(hell->envp);
+	if (shell->directories != NULL)
+		free_array(hell->directories);
 }

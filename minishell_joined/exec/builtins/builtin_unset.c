@@ -12,47 +12,47 @@
 
 #include "builtins.h"
 
-void	remove_from_env(char *key, t_env **env)
+void remove_from_env(char *key, t_env **env)
 {
-	t_env	*current;
-	t_env	*prev;
-	size_t	key_len;
+    t_env   *current;
+    t_env   *prev;
 
-	if (!key || !env || !(*env)) // Verificar que hay algo en la lista
-		return;
+    if (!key || !env || !(*env)) // Verificar parámetros
+        return;
 
-	current = *env;
-	prev = NULL;
-	key_len = ft_strrlen(key);
-	// Buscar la variable en la lista
-	while (current)
-	{
-		if (ft_strrncmp(current->name, key, key_len) == 0) // Encontramos la variable
-		{
-			if (prev) // Caso general: eliminar un nodo que no es el primero
-				prev->next = current->next;
-			else // Caso especial: eliminar el primer nodo
-				*env = current->next;
+    current = *env;
+    prev = NULL;
 
-			// Liberar memoria del nodo eliminado
-			free(current->name);
-			free(current->content);
-			free(current);
-			return;
-		}
-		prev = current;
-		current = current->next;
-	}
+    while (current)
+    {
+        // Comparamos nombre exacto en lugar de usar key_len
+        if (strcmp(current->name, key) == 0)
+        {
+            // Eliminar nodo
+            if (prev)
+                prev->next = current->next;
+            else
+                *env = current->next;
+
+            free(current->name);
+            free(current->content);
+            free(current);
+            return;
+        }
+        prev = current;
+        current = current->next;
+    }
 }
-// Implementación del comando unset
-void	builtin_unset(t_token *command, t_env **env)
-{
-	int	i;
 
-	i = 0;
+// Implementación del comando unset
+void builtin_unset(t_token *command, t_env **env)
+{
+    int i = 0;
+
+    // Recorremos todos los parámetros (ej. unset VAR1 VAR2 VAR3 ...)
     while (i < command->nparams)
-	{
-		remove_from_env(command->params[i], env);
-		i++;
-	}
+    {
+        remove_from_env(command->params[i], env);
+        i++;
+    }
 }
