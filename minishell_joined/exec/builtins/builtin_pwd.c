@@ -12,7 +12,7 @@
 
 #include "builtins.h"
 
-void	builtin_pwd(void)
+void	builtin_pwd(t_shell *shell)
 {
 	char	*cwd;
 
@@ -24,5 +24,8 @@ void	builtin_pwd(void)
 		free(cwd);
 	}
 	else
+	{
 		perror("pwd");
+		builtin_exit(NULL, shell, 127);
+	}
 }
