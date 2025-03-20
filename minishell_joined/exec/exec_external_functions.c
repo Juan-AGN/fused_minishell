@@ -290,8 +290,9 @@ void	execute(char *command, char **directories, char **envp, t_shell *shell)
 		try(full_path, params, shell, envp);
 		i++;
 	}
-	free_array(params);
+	write(STDERR_FILENO, params[0], exec_ft_strlen(params[0]));
 	write(STDERR_FILENO, ": command not found\n", 20);
+	free_array(params);
 	builtin_exit(NULL, shell, 127);
 }
 
