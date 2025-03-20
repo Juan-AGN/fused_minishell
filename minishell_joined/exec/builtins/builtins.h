@@ -64,7 +64,7 @@ int	builtin_env(int nparams, char **envp);
 char	**ft_spplit(char const *s, char c);
 void	*ft_meemcpy(void *dest, const void *src, size_t n);
 void	free_array(char **directories);
-int	 builtin_exit(char **args) ;
+int	builtin_exit(char **args, t_shell *shell, int checker);
 int	ft_aatoi(const char *nptr);
 int	ft_iisdigit(int c);
 void	builtin_unset(t_token *command, t_env **env);
@@ -76,5 +76,7 @@ char	*ft_sstrdup(const char *s1);
 void	*ft_ccalloc(size_t count, size_t size);
 void	ft_bbzero(void *s, size_t n);
 void	*ft_mmemset(void *s, int c, size_t len);
+void	ft_free_for_exit(t_shell *minishell);
+void	exec_free_all(t_shell *shell);
 
 #endif

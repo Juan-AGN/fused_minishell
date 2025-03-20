@@ -68,6 +68,9 @@ int main(int argc, char **argv, char **envp)
 	if (argc == -1 || argv == NULL)
 		return 100;
 	minishell = ft_prepare_values(envp);
+	minishell->envp = NULL;
+	minishell->pipes = NULL;
+	minishell->exit_code = NULL;
 	rl_redisplay();
 	while (1)
 	{

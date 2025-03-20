@@ -31,7 +31,10 @@ char	**exec_convert_env_to_array(t_shell *shell)
 	}
 	envp = (char **)malloc(sizeof(char *) * (count + 1));
 	if (!envp)
-		return (NULL);
+	{
+		perror("malloc error");
+		builtin_exit(NULL, shell, -1);
+	}
 	tmp = *(shell->env);
 	while (i < count)
 	{
@@ -69,7 +72,7 @@ void	exec_free_array(char **directories)
 	free(directories);
 }
 
-void	create_pipes(int pipes[][2], int ncom)
+void	create_pipes(int pipes[][2], int ncom, t_shell *shell)
 {
 	int	i;
 
@@ -78,14 +81,14 @@ void	create_pipes(int pipes[][2], int ncom)
 	{
 		if (pipe(pipes[i]) == -1)
 		{
-			perror("pipe");
-			exit(EXIT_FAILURE);
+			perror("pipe errpr");
+			builtin_exit(NULL, shell, -1);
 		}
 		i++;
 	}
 }
 
-char	*token_to_str(const t_token *token)
+char	*token_to_str(const t_token *token, t_shell *shell)
 {
 	size_t	total_length;
 	int		i;
@@ -104,7 +107,10 @@ char	*token_to_str(const t_token *token)
 	total_length += 1;
 	result = (char *)malloc(total_length);
 	if (!result)
-		return (NULL);
+	{
+		perror("malloc errpr");
+		builtin_exit(NULL, shell, -1);
+	}
 	result[0] = '\0';
 	exec_ft_strlcat(result, token->command, total_length);
 	i = 0;
@@ -117,7 +123,7 @@ char	*token_to_str(const t_token *token)
 	return (result);
 }
 
-t_ret	forking(int pipes[][2], t_shell *shell, char **direct, char **envp)
+t_ret	forking(t_shell *shell, char **envp)
 {
 	int		i;
 	char	*chain;
@@ -136,80 +142,93 @@ t_ret	forking(int pipes[][2], t_shell *shell, char **direct, char **envp)
 		saved_stdout = dup(STDOUT_FILENO);
 		if (saved_stdin == -1 || saved_stdout == -1)
 		{
-			perror("dup");
-			pid_return.use_pid = 2;
-			return (pid_return);
+			perror("dup error");
+			builtin_exit(NULL, shell, -1);
 		}
-		pid_return.return_value = redirect(pipes, &(shell->token[0]), 0, shell->ncomands);
+		pid_return.return_value = redirect(shell, &(shell->token[0]), 0, shell->ncomands);
 		if (pid_return.return_value != 0)
 		{
+			close(saved_stdin);
+			close(saved_stdout);
 			pid_return.use_pid = 2;
 			return (pid_return);
 		}
-		pid_return.return_value = execute_builtin(shell->token, envp, shell->env);
-		dup2(saved_stdin, STDIN_FILENO);
-		dup2(saved_stdout, STDOUT_FILENO);
+		if ( exec_ft_strncmp(shell->token[0].command, "exit", 4) == 0)
+		{
+			close(saved_stdin);
+			close(saved_stdout);
+		}
+		pid_return.return_value = execute_builtin(shell->token, envp, shell->env, shell);
+		if (dup2(saved_stdin, STDIN_FILENO) == -1 || dup2(saved_stdout, STDOUT_FILENO) == -1)
+		{
+			perror("dup error");
+			close(saved_stdin);
+			close(saved_stdout);
+			builtin_exit(NULL, shell, -1);
+		}
 		close(saved_stdin);
 		close(saved_stdout);
-
 		pid_return.use_pid = 2;
 		return (pid_return);
 	}
-
-	// === Comandos externos con fork ===
 	while (i < shell->ncomands)
 	{
 		pid_return.pid = fork();
 		if (pid_return.pid == -1)
 		{
-			perror("fork");
-			exit(EXIT_FAILURE);
+			perror("fork error");
+			builtin_exit(NULL, shell, -1);
 		}
-		if (pid_return.pid == 0) // Hijo
+		if (pid_return.pid == 0)
 		{
 			if (!shell->token[i].command)
 			{
-				pid_return.return_value = redirect(pipes, &(shell->token[i]), i, shell->ncomands);
-				exit(pid_return.return_value);
+				pid_return.return_value = redirect(shell, &(shell->token[i]), i, shell->ncomands);
+				builtin_exit(NULL, shell, pid_return.return_value);
 			}
 			else
 			{
-				chain = token_to_str(&(shell->token[i]));
-				pid_return.return_value = redirect(pipes, &(shell->token[i]), i, shell->ncomands);
+				pid_return.return_value = redirect(shell, &(shell->token[i]), i, shell->ncomands);
 				if (pid_return.return_value != 0)
-					exit(pid_return.return_value);
+					builtin_exit(NULL, shell, pid_return.return_value);
 				if (is_builtin(shell->token[i].command))
 				{
-					pid_return.return_value = execute_builtin(&(shell->token[i]), envp, shell->env);
-					exit(pid_return.return_value);
+					pid_return.return_value = execute_builtin(&(shell->token[i]), envp, shell->env, shell);
+					builtin_exit(NULL, shell, pid_return.return_value);
 				}
-				execute(chain, direct, envp);
+				shell->directories = find_directories(envp, shell);
+				if (!shell->directories)
+				{
+					perror("No path defined");
+					builtin_exit(NULL, shell, 127);
+				}
+				chain = token_to_str(&(shell->token[i]), shell);
+				execute(chain, shell->directories, envp, shell);
 			}
 		}
 		i++;
 	}
-
 	return (pid_return);
 }
 
-void	try(char *full_path, char **commands, char **directories, char **envp)
+void	try(char *full_path, char **commands, t_shell *shell, char **envp)
 {
 	struct	stat st;
 
-	// Obtener información del archivo
-	if (stat(full_path, &st) == 0)
+	if (stat(commands[0], &st) == 0)
 	{
-		// 1. Verificar si es un directorio
 		if (S_ISDIR(st.st_mode))
 		{
-			write(STDERR_FILENO, full_path, exec_ft_strlen(full_path));
+			write(STDERR_FILENO, commands[0], exec_ft_strlen(commands[0]));
 			write(STDERR_FILENO, ": Is a directory\n", 17);
 			free(full_path);
 			free_array(commands);
-			free_array(directories);
-			exit(126);
+			builtin_exit(NULL, shell, 126);
 		}
-
+	}
+	// Obtener información del archivo
+	if (stat(full_path, &st) == 0)
+	{
 		// 2. Verificar si tiene permisos de ejecución
 		if (st.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH))
 		{
@@ -218,24 +237,20 @@ void	try(char *full_path, char **commands, char **directories, char **envp)
 			perror("execve error");
 			free(full_path);
 			free_array(commands);
-			free_array(directories);
-			exit(126);
+			builtin_exit(NULL, shell, 126);
 		}
-
 		// 3. Si no tiene permisos de ejecución, imprimir "Permission denied"
 		write(STDERR_FILENO, full_path, exec_ft_strlen(full_path));
 		write(STDERR_FILENO, ": Permission denied\n", 20);
 		free(full_path);
 		free_array(commands);
-		free_array(directories);
-		exit(126);
+		builtin_exit(NULL, shell, 126);
 	}
-
 	// Si no existe, simplemente liberamos la memoria y seguimos probando otras rutas.
 	free(full_path);
 }
 
-char	**handle_params_allocation(char *command, char **directories)
+char	**handle_params_allocation(char *command, t_shell *shell)
 {
 	char	**commands;
 
@@ -243,8 +258,7 @@ char	**handle_params_allocation(char *command, char **directories)
 	if (!commands)
 	{
 		perror("malloc error");
-		free_array(directories);
-		exit(EXIT_FAILURE);
+		builtin_exit(NULL, shell, 1);
 	}
 	return (commands);
 }
@@ -254,13 +268,14 @@ Se le pasa el comando entero junto a sus posibles parametros de ejecucion,
 las rutas donde es posible que se encuentre y envp
 
 */
-void	execute(char *command, char **directories, char **envp)
+void	execute(char *command, char **directories, char **envp, t_shell *shell)
 {
 	char	**params;
 	char	*full_path;
 	int		i;
 
-	params = handle_params_allocation(command, directories);
+	params = handle_params_allocation(command, shell);
+	free(command);
 	i = 0;
 	while (directories[i] != NULL)
 	{
@@ -268,21 +283,18 @@ void	execute(char *command, char **directories, char **envp)
 		if (!full_path)
 		{
 			free_array(params);
-			free_array(directories);
 			perror("malloc error");
-			exit(EXIT_FAILURE);
+			builtin_exit(NULL, shell, 1);
 		}
-		try(full_path, params, directories, envp);
+		try(full_path, params, shell, envp);
 		i++;
 	}
 	free_array(params);
-	free_array(directories);
-	write(STDERR_FILENO, command, exec_ft_strlen(command));
 	write(STDERR_FILENO, ": command not found\n", 20);
-	exit(127);
+	builtin_exit(NULL, shell, 127);
 }
 
-char	**find_directories(char **envp)
+char	**find_directories(char **envp, t_shell *shell)
 {
 	char	string_path[6];
 	int		pos;
@@ -300,14 +312,13 @@ char	**find_directories(char **envp)
 			if (!directories)
 			{
 				perror("malloc error");
-				exit(EXIT_FAILURE);
+				builtin_exit(NULL, shell, -1);
 			}
 			return (directories);
 		}
 		pos++;
 	}
-	perror("No path defined");
-	exit(EXIT_FAILURE);
+	return (NULL);
 }
 
 char	*build_full_path(const char *directory, const char *command)
@@ -356,7 +367,7 @@ char	*build_full_path(const char *directory, const char *command)
 	return (full_path);
 }
 
-int	returning(int ncom, pid_t pid)
+int	returning(int ncom, pid_t pid, t_shell *shell)
 {
 	int	i;
 	int	wpid;
@@ -370,7 +381,7 @@ int	returning(int ncom, pid_t pid)
 		if (wpid < 0)
 		{
 			perror("waitpid");
-			exit(EXIT_FAILURE);
+			builtin_exit(NULL, shell, -1);
 		}
 		if (wpid == pid)
 		{
