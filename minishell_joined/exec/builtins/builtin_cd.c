@@ -17,7 +17,7 @@ char	*get_env_value(t_env *env, const char *varname)
 {
 	while (env)
 	{
-		if (exec_ft_strncmp(env->name, varname, exec_ft_strlen(env->name)) == 0
+		if (exec_ft_strncmp(env->name, varname, exec_ft_strlen(varname)) == 0
 			&& exec_ft_strlen(env->name) == exec_ft_strlen(varname))
 			return (env->content);
 		env = env->next;
@@ -26,7 +26,7 @@ char	*get_env_value(t_env *env, const char *varname)
 }
 
 /* Actualizar (o crear) una variable en t_env */
-void	update_env(t_env **env, const char *varname, const char *new_content)
+void	update_env(t_env **env, const char *varname, const char *new_content, t_shell *shell)
 {
 	t_env	*tmp;
 	t_env	*new_node;
@@ -39,6 +39,11 @@ void	update_env(t_env **env, const char *varname, const char *new_content)
 		{
 			free(tmp->content);
 			tmp->content = ft_sstrdup(new_content);
+			if (!tmp->content)
+			{
+				perror("malloc error");
+				builtin_exit(NULL, shell, -1);
+			}
 			return ;
 		}
 		tmp = tmp->next;
@@ -47,7 +52,7 @@ void	update_env(t_env **env, const char *varname, const char *new_content)
 	if (!new_node)
 	{
 		perror("update_env");
-		return ;
+		builtin_exit(NULL, shell, -1);
 	}
 	new_node->name = ft_sstrdup(varname);
 	new_node->content = ft_sstrdup(new_content);
@@ -56,7 +61,7 @@ void	update_env(t_env **env, const char *varname, const char *new_content)
 }
 
 /* Expandir la tilde ('~') usando el valor de "HOME" */
-static char	*expand_tilde(const char *arg, t_env *env)
+static char	*expand_tilde(const char *arg, t_env *env, t_shell *shell)
 {
 	const char	*home;
 	char		*expanded;
@@ -77,7 +82,7 @@ static char	*expand_tilde(const char *arg, t_env *env)
 		if (!expanded)
 		{
 			perror("cd");
-			return (NULL);
+			builtin_exit(NULL, shell, -1);
 		}
 		exec_ft_cpy(expanded, home, len);
 		exec_ft_strlcat(expanded, arg + 1, len);
@@ -87,7 +92,7 @@ static char	*expand_tilde(const char *arg, t_env *env)
 }
 
 /* Actualizar OLDPWD y PWD en la lista t_env */
-static int	update_pwd_oldpwd(t_env **env, const char *oldpwd)
+static int	update_pwd_oldpwd(t_env **env, const char *oldpwd, t_shell *shell)
 {
 	char	*cwd;
 
@@ -95,10 +100,10 @@ static int	update_pwd_oldpwd(t_env **env, const char *oldpwd)
 	if (!cwd)
 	{
 		perror("cd");
-		return (1);
+		builtin_exit(NULL, shell, -1);
 	}
-	update_env(env, "OLDPWD", oldpwd);
-	update_env(env, "PWD", cwd);
+	update_env(env, "OLDPWD", oldpwd, shell);
+	update_env(env, "PWD", cwd, shell);
 	free(cwd);
 	return (0);
 }
@@ -120,7 +125,7 @@ static char	*handle_cd_minus(t_env *env)
 }
 
 /* Implementación del builtin cd usando t_env */
-int	builtin_cd(char **args, t_env **env)
+int	builtin_cd(char **args, t_env **env, t_shell *shell, int ncomands)
 {
 	char	*oldpwd;
 	char	*path;
@@ -132,7 +137,7 @@ int	builtin_cd(char **args, t_env **env)
 	if (!oldpwd)
 	{
 		perror("cd");
-		return (1);
+		builtin_exit(NULL, shell, -1);
 	}
 	if (!args || !args[0])
 	{
@@ -144,7 +149,7 @@ int	builtin_cd(char **args, t_env **env)
 			return (1);
 		}
 	}
-	else if (args[1])
+	else if (ncomands > 1)
 	{
 		write(2, "cd: too many arguments\n", 24);
 		free(oldpwd);
@@ -162,7 +167,7 @@ int	builtin_cd(char **args, t_env **env)
 	}
 	else
 	{
-		expanded = expand_tilde(args[0], *env);
+		expanded = expand_tilde(args[0], *env, shell);
 		if (!expanded)
 		{
 			free(oldpwd);
@@ -177,7 +182,7 @@ int	builtin_cd(char **args, t_env **env)
 		free(expanded);
 		return (1);
 	}
-	if (update_pwd_oldpwd(env, oldpwd) != 0)
+	if (update_pwd_oldpwd(env, oldpwd, shell) != 0)
 	{
 		free(oldpwd);
 		free(expanded);

@@ -20,7 +20,8 @@ int	exe_builtin(t_token *command, char **envp, t_env **env, t_shell *shell)
 	if (ft_strrncmp(command->command, "echo\0", 5) == 0)
 		builtin_echo(command);
 	else if (ft_strrncmp(command->command, "cd\0", 3) == 0)
-		return_status = builtin_cd(command->params, env);
+		return_status = builtin_cd(command->params, env, shell,
+				command->nparams);
 	else if (ft_strrncmp(command->command, "pwd\0", 4) == 0)
 		builtin_pwd(shell);
 	else if (ft_strrncmp(command->command, "env\0", 4) == 0)
@@ -30,7 +31,7 @@ int	exe_builtin(t_token *command, char **envp, t_env **env, t_shell *shell)
 	else if (ft_strrncmp(command->command, "unset\0", 6) == 0)
 		builtin_unset(command, env);
 	else if (ft_strrncmp(command->command, "export\0", 7) == 0)
-		return_status = builtin_export(command, env);
+		return_status = builtin_export(command, env, shell);
 	return (return_status);
 }
 
@@ -191,6 +192,30 @@ int	redirect(t_shell *shell, t_token *token, int current, int ncomands)
 	return (exit_value);
 }
 
+void	rest_of_run(t_ret *pid_return, t_shell *shell, int *exit_code)
+{
+	if (pid_return->use_pid == 2)
+	{
+		free(shell->exit_code);
+		*exit_code = pid_return->return_value;
+		shell->exit_code = ft_itoa(*exit_code);
+		if (!shell->exit_code)
+		{
+			perror("malloc error");
+			builtin_exit(NULL, shell, -1);
+		}
+		return ;
+	}
+	free(shell->exit_code);
+	*exit_code = returning(shell->ncomands, pid_return->pid, shell);
+	shell->exit_code = ft_itoa(*exit_code);
+	if (!shell->exit_code)
+	{
+		perror("malloc error");
+		builtin_exit(NULL, shell, -1);
+	}
+}
+
 void	run(t_shell *shell, char **envp)
 {
 	int		i;
@@ -216,26 +241,7 @@ void	run(t_shell *shell, char **envp)
 		i++;
 	}
 	free(shell->pipes);
-	if (pid_return.use_pid == 2)
-	{
-		free(shell->exit_code);
-		exit_code = pid_return.return_value;
-		shell->exit_code = ft_itoa(exit_code);
-		if (!shell->exit_code)
-		{
-			perror("malloc error");
-			return ;
-		}
-		return ;
-	}
-	free(shell->exit_code);
-	exit_code = returning(shell->ncomands, pid_return.pid, shell);
-	shell->exit_code = ft_itoa(exit_code);
-	if (!shell->exit_code)
-	{
-		perror("malloc error");
-		return ;
-	}
+	rest_of_run(&pid_return, shell, &exit_code);
 }
 
 void	handle_shell(t_shell *shell)

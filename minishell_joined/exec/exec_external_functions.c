@@ -12,18 +12,43 @@
 
 #include "exteroided.h"
 
+void	loop_converting(int count, t_env *tmp, char	**envp, t_shell *shell)
+{
+	size_t	len;
+	int		j;
+	int		i;
+
+	i = 0;
+	while (i < count)
+	{
+		len = exec_ft_strlen(tmp->name) + exec_ft_strlen(tmp->content) + 2;
+		envp[i] = (char *)malloc(len);
+		if (!envp[i])
+		{
+			j = i;
+			while (--j >= 0)
+				free(envp[j]);
+			free(envp);
+			builtin_exit(NULL, shell, -1);
+		}
+		envp[i][0] = '\0';
+		exec_ft_strlcat(envp[i], tmp->name, len);
+		exec_ft_strlcat(envp[i], "=", len);
+		exec_ft_strlcat(envp[i], tmp->content, len);
+		tmp = tmp->next;
+		i++;
+	}
+	envp[count] = NULL;
+}
+
 char	**exec_convert_env_to_array(t_shell *shell)
 {
 	int		count;
 	t_env	*tmp;
 	char	**envp;
-	int		i;
-	size_t	len;
-	int		j;
 
 	tmp = *(shell->env);
 	count = 0;
-	i = 0;
 	while (tmp)
 	{
 		count++;
@@ -36,26 +61,7 @@ char	**exec_convert_env_to_array(t_shell *shell)
 		builtin_exit(NULL, shell, -1);
 	}
 	tmp = *(shell->env);
-	while (i < count)
-	{
-		len = exec_ft_strlen(tmp->name) + exec_ft_strlen(tmp->content) + 2;
-		envp[i] = (char *)malloc(len);
-		if (!envp[i])
-		{
-			j = i;
-			while (--j >= 0)
-				free(envp[j]);
-			free(envp);
-			return (NULL);
-		}
-		envp[i][0] = '\0';
-		exec_ft_strlcat(envp[i], tmp->name, len);
-		exec_ft_strlcat(envp[i], "=", len);
-		exec_ft_strlcat(envp[i], tmp->content, len);
-		tmp = tmp->next;
-		i++;
-	}
-	envp[count] = NULL;
+	loop_converting(count, tmp, envp, shell);
 	return (envp);
 }
 

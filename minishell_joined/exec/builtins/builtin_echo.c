@@ -12,32 +12,38 @@
 
 #include "builtins.h"
 
-void	builtin_echo(t_token *command)
+void	other_echo(t_token *command, int *i, int *newline)
 {
-	int	i;
-	int	newline;
 	int	j;
 
-	i = 0;
-	newline = 1;
 	if (command->nparams == 0)
 	{
 		write(1, "\n", 1);
 		return ;
 	}
-	while (i < command->nparams && command->params[i][0] == '-')
+	while (*i < command->nparams && command->params[*i][0] == '-')
 	{
 		j = 1;
-		while (command->params[i][j] == 'n')
+		while (command->params[*i][j] == 'n')
 			j++;
-		if (command->params[i][j] == '\0' && j > 1)
+		if (command->params[*i][j] == '\0' && j > 1)
 		{
-			newline = 0;
-			i++;
+			*newline = 0;
+			(*i)++;
 		}
 		else
 			break ;
 	}
+}
+
+void	builtin_echo(t_token *command)
+{
+	int	i;
+	int	newline;
+
+	i = 0;
+	newline = 1;
+	other_echo(command, &i, &newline);
 	while (i < command->nparams)
 	{
 		write(1, command->params[i], ft_strrlen(command->params[i]));

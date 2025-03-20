@@ -28,7 +28,7 @@ int	is_valid_identifier(const char *str)
 }
 
 /* Añadir o reemplazar variables en t_env */
-void	add_to_env(char *key, char *value, t_env **env)
+void	add_to_env(char *key, char *value, t_env **env, t_shell *shell)
 {
 	t_env	*current;
 	t_env	*new_node;
@@ -50,7 +50,7 @@ void	add_to_env(char *key, char *value, t_env **env)
 			if (!current->content)
 			{
 				perror("strdup");
-				exit(EXIT_FAILURE);
+				builtin_exit(NULL, shell, -1);
 			}
 			return ;
 		}
@@ -59,20 +59,20 @@ void	add_to_env(char *key, char *value, t_env **env)
 	new_node = malloc(sizeof(t_env));
 	if (!new_node)
 	{
-		perror("malloc");
+		builtin_exit(NULL, shell, -1);
 		exit(EXIT_FAILURE);
 	}
 	new_node->name = ft_sstrdup(key);
 	if (!new_node->name)
 	{
 		perror("strdup");
-		exit(EXIT_FAILURE);
+		builtin_exit(NULL, shell, -1);
 	}
 	new_node->content = ft_sstrdup(value);
 	if (!new_node->content)
 	{
 		perror("strdup");
-		exit(EXIT_FAILURE);
+		builtin_exit(NULL, shell, -1);
 	}
 	new_node->next = NULL;
 	if (*env == NULL)
@@ -87,7 +87,7 @@ void	add_to_env(char *key, char *value, t_env **env)
 }
 
 /* Implementación del comando export */
-int	builtin_export(t_token *command, t_env **env)
+int	builtin_export(t_token *command, t_env **env, t_shell *shell)
 {
 	int		i;
 	char	*equal_sign;
@@ -113,7 +113,7 @@ int	builtin_export(t_token *command, t_env **env)
 		{
 			*equal_sign = '\0';
 			if (is_valid_identifier(command->params[i]))
-				add_to_env(command->params[i], equal_sign + 1, env);
+				add_to_env(command->params[i], equal_sign + 1, env, shell);
 			else
 			{
 				printf("export: `%s': no valid identify\n", command->params[i]);

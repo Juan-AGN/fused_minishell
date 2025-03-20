@@ -27,6 +27,25 @@ int	is_numeric(const char *str)
 	return (1);
 }
 
+void	additional_exit(char **args, t_shell *shell, int *exit_code)
+{
+	if (!args)
+	{
+		exec_free_all(shell);
+		exit(0);
+	}
+	if (is_numeric(args[0]))
+		*exit_code = ft_aatoi(args[0]) % 256;
+	else
+	{
+		write(STDERR_FILENO, "minishell: exit: ", 17);
+		write(STDERR_FILENO, args[0], ft_strrlen(args[0]));
+		write(STDERR_FILENO, ": numeric argument required\n", 28);
+		exec_free_all(shell);
+		exit(2);
+	}
+}
+
 // Implementación del builtin exit
 int	builtin_exit(char **args, t_shell *shell, int checker)
 {
@@ -37,21 +56,7 @@ int	builtin_exit(char **args, t_shell *shell, int checker)
 	{
 		if (isatty(STDOUT_FILENO))
 			write(STDOUT_FILENO, "exit\n", 5);
-		if (!args)
-		{
-			exec_free_all(shell);
-			exit(0);
-		}
-		if (is_numeric(args[0]))
-			exit_code = ft_aatoi(args[0]) % 256;
-		else
-		{
-			write(STDERR_FILENO, "minishell: exit: ", 17);
-			write(STDERR_FILENO, args[0], ft_strrlen(args[0]));
-			write(STDERR_FILENO, ": numeric argument required\n", 28);
-			exec_free_all(shell);
-			exit(2);
-		}
+		additional_exit(args, shell, &exit_code);
 		if (args[1])
 		{
 			write(STDERR_FILENO, "minishell: exit: too many arguments\n", 36);
