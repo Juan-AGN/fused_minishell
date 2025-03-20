@@ -116,7 +116,7 @@ int	builtin_export(t_token *command, t_env **env)
 				add_to_env(command->params[i], equal_sign + 1, env);
 			else
 			{
-				printf("export: `%s': not a valid identifier\n", command->params[i]);
+				printf("export: `%s': no valid identify\n", command->params[i]);
 				return_value = 1;
 			}
 			*equal_sign = '=';

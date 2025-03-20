@@ -79,7 +79,7 @@ void	ft_free_for_exit(t_shell *minishell);
 void	exec_free_all(t_shell *shell);
 int		exec_ft_strncmp(const char *s1, const char *s2, size_t n);
 size_t	exec_ft_strlen(const char *s);
-size_t	exec_ft_strlcpy(char *restrict dst, const char *restrict src, size_t size);
+size_t	exec_ft_cpy(char *restrict dst, const char *restrict src, size_t size);
 size_t	exec_ft_strlcat(char *dst, const char *src, size_t size);
 
 #endif

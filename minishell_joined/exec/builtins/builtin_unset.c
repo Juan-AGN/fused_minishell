@@ -27,7 +27,8 @@ void	remove_from_env(char *key, t_env **env)
 	while (current)
 	{
 		name_len = exec_ft_strlen(current->name);
-		if (key_len == name_len && exec_ft_strncmp(current->name, key, key_len) == 0)
+		if (key_len == name_len
+			&& exec_ft_strncmp(current->name, key, key_len) == 0)
 		{
 			if (prev)
 				prev->next = current->next;

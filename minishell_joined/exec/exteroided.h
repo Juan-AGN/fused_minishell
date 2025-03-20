@@ -45,7 +45,7 @@ char	**find_directories(char **envp, t_shell *shell);
 int		redirect(t_shell *shell, t_token *token, int current, int ncomands);
 void	execute(char *command, char **directories, char **envp, t_shell *shell);
 char	*build_full_path(const char *directory, const char *command);
-size_t	exec_ft_strlcpy(char *restrict dst, const char *restrict src, size_t size);
+size_t	exec_ft_cpy(char *restrict dst, const char *restrict src, size_t size);
 int		exec_ft_strncmp(const char *s1, const char *s2, size_t n);
 void	*exec_ft_memcpy(void *dest, const void *src, size_t n);
 void	here_doc_child(char *limiter, int fd);
@@ -56,7 +56,7 @@ char	*exec_ft_strjoin(char const *s1, char const *s2);
 char	*exec_get_next_line(int fd);
 char	*ft_itoa(int n);
 int		is_builtin(char *builtin);
-int		execute_builtin(t_token *command, char **envp, t_env **env, t_shell *shell);
+int		exe_builtin(t_token *command, char **envp, t_env **env, t_shell *shell);
 void	ft_free_for_exit(t_shell *minishell);
 void	exec_free_all(t_shell *shell);
 

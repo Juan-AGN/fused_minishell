@@ -12,7 +12,7 @@
 
 #include "exteroided.h"
 
-int	execute_builtin(t_token *command, char **envp, t_env **env, t_shell *shell)
+int	exe_builtin(t_token *command, char **envp, t_env **env, t_shell *shell)
 {
 	int	return_status;
 
@@ -84,7 +84,7 @@ int	open_heredocs(t_token *token, t_shell *shell)
 	return (pipe_fd[0]);
 }
 
-int	handle_redirections(t_shell *shell, t_token *token, int current_ncomands[2], int real_heredoc)
+int	han_red(t_shell *shell, t_token *token, int current_ncomands[2], int real)
 {
 	int		i;
 	int		fileout;
@@ -100,7 +100,8 @@ int	handle_redirections(t_shell *shell, t_token *token, int current_ncomands[2],
 		dup2(shell->pipes[current_ncomands[0]][1], STDOUT_FILENO);
 	while (i < token->ninout)
 	{
-		chain = exec_ft_substr(token->inout[i], 3, exec_ft_strlen(token->inout[i]) - 3);
+		chain = exec_ft_substr(token->inout[i], 3,
+				exec_ft_strlen(token->inout[i]) - 3);
 		if ((exec_ft_strncmp(token->inout[i], ">>", 2)) == 0)
 			fileout = open(chain, O_WRONLY | O_CREAT
 					| O_APPEND, 0644);
@@ -130,17 +131,17 @@ int	handle_redirections(t_shell *shell, t_token *token, int current_ncomands[2],
 		free(chain);
 		i++;
 	}
-	if (real_heredoc > -1 && token->ninfiles > 0)
+	if (real > -1 && token->ninfiles > 0)
 	{
-		if (dup2(real_heredoc, STDIN_FILENO) == -1)
+		if (dup2(real, STDIN_FILENO) == -1)
 		{
 			perror("dup2 heredoc error");
-			close(real_heredoc);
+			close(real);
 			builtin_exit(NULL, shell, -1);
 		}
-		close(real_heredoc);
+		close(real);
 	}
-	else if (real_heredoc == -1 && token->ninfiles > 0)
+	else if (real == -1 && token->ninfiles > 0)
 	{
 		if (dup2(filein, STDIN_FILENO) == -1)
 		{
@@ -180,7 +181,7 @@ int	redirect(t_shell *shell, t_token *token, int current, int ncomands)
 	read_heredoc = open_heredocs(token, shell);
 	current_ncomands[0] = current;
 	current_ncomands[1] = ncomands;
-	exit_value = handle_redirections(shell, token, current_ncomands, read_heredoc);
+	exit_value = han_red(shell, token, current_ncomands, read_heredoc);
 	while (i < ncomands - 1)
 	{
 		close(shell->pipes[i][0]);

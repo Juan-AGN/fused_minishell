@@ -26,7 +26,7 @@ char	*get_env_value(t_env *env, const char *varname)
 }
 
 /* Actualizar (o crear) una variable en t_env */
-void	update_env_value(t_env **env, const char *varname, const char *new_content)
+void	update_env(t_env **env, const char *varname, const char *new_content)
 {
 	t_env	*tmp;
 	t_env	*new_node;
@@ -46,7 +46,7 @@ void	update_env_value(t_env **env, const char *varname, const char *new_content)
 	new_node = (t_env *)malloc(sizeof(t_env));
 	if (!new_node)
 	{
-		perror("update_env_value");
+		perror("update_env");
 		return ;
 	}
 	new_node->name = ft_sstrdup(varname);
@@ -79,7 +79,7 @@ static char	*expand_tilde(const char *arg, t_env *env)
 			perror("cd");
 			return (NULL);
 		}
-		exec_ft_strlcpy(expanded, home, len);
+		exec_ft_cpy(expanded, home, len);
 		exec_ft_strlcat(expanded, arg + 1, len);
 		return (expanded);
 	}
@@ -97,8 +97,8 @@ static int	update_pwd_oldpwd(t_env **env, const char *oldpwd)
 		perror("cd");
 		return (1);
 	}
-	update_env_value(env, "OLDPWD", oldpwd);
-	update_env_value(env, "PWD", cwd);
+	update_env(env, "OLDPWD", oldpwd);
+	update_env(env, "PWD", cwd);
 	free(cwd);
 	return (0);
 }
@@ -150,7 +150,8 @@ int	builtin_cd(char **args, t_env **env)
 		free(oldpwd);
 		return (1);
 	}
-	else if (exec_ft_strncmp(args[0], "-", 1) == 0 && exec_ft_strlen(args[0]) == 1)
+	else if (exec_ft_strncmp(args[0], "-", 1) == 0
+		&& exec_ft_strlen(args[0]) == 1)
 	{
 		path = handle_cd_minus(*env);
 		if (!path)
