@@ -135,7 +135,7 @@ t_ret	forking(t_shell *shell, char **envp)
 	pid_return.pid = -1;
 	pid_return.return_value = 0;
 	pid_return.use_pid = 1;
-
+	shell->directories = find_directories(envp, shell);
 	if (shell->ncomands == 1 && shell->token[0].command != NULL && is_builtin(shell->token[0].command))
 	{
 		saved_stdin = dup(STDIN_FILENO);
@@ -153,7 +153,7 @@ t_ret	forking(t_shell *shell, char **envp)
 			pid_return.use_pid = 2;
 			return (pid_return);
 		}
-		if ( exec_ft_strncmp(shell->token[0].command, "exit", 4) == 0)
+		if (exec_ft_strncmp(shell->token[0].command, "exit", 4) == 0)
 		{
 			close(saved_stdin);
 			close(saved_stdout);
@@ -196,7 +196,6 @@ t_ret	forking(t_shell *shell, char **envp)
 					pid_return.return_value = execute_builtin(&(shell->token[i]), envp, shell->env, shell);
 					builtin_exit(NULL, shell, pid_return.return_value);
 				}
-				shell->directories = find_directories(envp, shell);
 				if (!shell->directories)
 				{
 					perror("No path defined");
@@ -213,7 +212,7 @@ t_ret	forking(t_shell *shell, char **envp)
 
 void	try(char *full_path, char **commands, t_shell *shell, char **envp)
 {
-	struct	stat st;
+	struct stat	st;
 
 	if (stat(commands[0], &st) == 0)
 	{
@@ -226,27 +225,22 @@ void	try(char *full_path, char **commands, t_shell *shell, char **envp)
 			builtin_exit(NULL, shell, 126);
 		}
 	}
-	// Obtener información del archivo
 	if (stat(full_path, &st) == 0)
 	{
-		// 2. Verificar si tiene permisos de ejecución
 		if (st.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH))
 		{
-			// Intentar ejecutar el archivo
 			execve(full_path, commands, envp);
 			perror("execve error");
 			free(full_path);
 			free_array(commands);
 			builtin_exit(NULL, shell, 126);
 		}
-		// 3. Si no tiene permisos de ejecución, imprimir "Permission denied"
 		write(STDERR_FILENO, full_path, exec_ft_strlen(full_path));
 		write(STDERR_FILENO, ": Permission denied\n", 20);
 		free(full_path);
 		free_array(commands);
 		builtin_exit(NULL, shell, 126);
 	}
-	// Si no existe, simplemente liberamos la memoria y seguimos probando otras rutas.
 	free(full_path);
 }
 
@@ -335,7 +329,6 @@ char	*build_full_path(const char *directory, const char *command)
 		exec_ft_strlcpy(full_path, command, exec_ft_strlen(command) + 1);
 		return (full_path);
 	}
-
 	if (command[0] == '.' && (command[1] == '/' || command[1] == '.'))
 	{
 		cwd = getcwd(NULL, 0);
@@ -392,7 +385,6 @@ int	returning(int ncom, pid_t pid, t_shell *shell)
 		}
 		i++;
 	}
-	//exit(exit_code);
 	return (exit_code);
 }
 

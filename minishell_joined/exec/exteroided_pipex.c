@@ -22,7 +22,7 @@ int	execute_builtin(t_token *command, char **envp, t_env **env, t_shell *shell)
 	else if (ft_strrncmp(command->command, "cd\0", 3) == 0)
 		return_status = builtin_cd(command->params, env);
 	else if (ft_strrncmp(command->command, "pwd\0", 4) == 0)
-		builtin_pwd();
+		builtin_pwd(shell);
 	else if (ft_strrncmp(command->command, "env\0", 4) == 0)
 		return_status = builtin_env(command->nparams, envp);
 	else if (ft_strrncmp(command->command, "exit\0", 5) == 0)
@@ -47,38 +47,44 @@ int	is_builtin(char *builtin)
 	return (0);
 }
 
-int	open_heredocs(t_token *token, t_shell *shell)
+void	process_heredoc_entry(char *entry, int *pipe_fd, t_shell *shell)
 {
-	int		i;
 	char	*chain;
-	int		pipe_heredoc[2];
 
-	i = 0;
-	pipe_heredoc[0] = -1;
-	pipe_heredoc[1] = -1;
-	while (i < token->ninout)
+	if (exec_ft_strncmp(entry, "<<", 2) == 0)
 	{
-		chain = exec_ft_substr(token->inout[i], 3, exec_ft_strlen(token->inout[i]) - 3);
-		if ((exec_ft_strncmp(token->inout[i], "<<", 2)) == 0)
+		chain = exec_ft_substr(entry, 3, exec_ft_strlen(entry) - 3);
+		if (pipe(pipe_fd) < 0)
 		{
-			if (pipe(pipe_heredoc) < 0)
-			{
-				perror("Error creating heredoc pipe");
-				free(chain);
-				builtin_exit(NULL, shell, -1);
-			}
-			here_doc_child(chain, pipe_heredoc[1]);
-			close(pipe_heredoc[1]);
+			perror("Error creating heredoc pipe");
+			free(chain);
+			builtin_exit(NULL, shell, -1);
 		}
-		if ((exec_ft_strncmp(token->inout[i], "< ", 2)) == 0)
-			pipe_heredoc[0] = -1;
+		here_doc_child(chain, pipe_fd[1]);
+		close(pipe_fd[1]);
 		free(chain);
-		i++;
 	}
-	return (pipe_heredoc[0]);
+	else if (exec_ft_strncmp(entry, "< ", 2) == 0)
+		pipe_fd[0] = -1;
 }
 
-int	handle_redirections(t_shell *shell, t_token *token, int current, int ncomands, int real_heredoc)
+int	open_heredocs(t_token *token, t_shell *shell)
+{
+	int	i;
+	int	pipe_fd[2];
+
+	i = 0;
+	pipe_fd[0] = -1;
+	pipe_fd[1] = -1;
+	while (i < token->ninout)
+	{
+		process_heredoc_entry(token->inout[i], pipe_fd, shell);
+		i++;
+	}
+	return (pipe_fd[0]);
+}
+
+int	handle_redirections(t_shell *shell, t_token *token, int current_ncomands[2], int real_heredoc)
 {
 	int		i;
 	int		fileout;
@@ -88,10 +94,10 @@ int	handle_redirections(t_shell *shell, t_token *token, int current, int ncomand
 	i = 0;
 	fileout = 0;
 	filein = -1;
-	if (token->ninfiles == 0 && current > 0)
-		dup2(shell->pipes[current - 1][0], STDIN_FILENO);
-	if (token->noutfiles == 0 && current < ncomands - 1)
-		dup2(shell->pipes[current][1], STDOUT_FILENO);
+	if (token->ninfiles == 0 && current_ncomands[0] > 0)
+		dup2(shell->pipes[current_ncomands[0] - 1][0], STDIN_FILENO);
+	if (token->noutfiles == 0 && current_ncomands[0] < current_ncomands[1] - 1)
+		dup2(shell->pipes[current_ncomands[0]][1], STDOUT_FILENO);
 	while (i < token->ninout)
 	{
 		chain = exec_ft_substr(token->inout[i], 3, exec_ft_strlen(token->inout[i]) - 3);
@@ -106,7 +112,7 @@ int	handle_redirections(t_shell *shell, t_token *token, int current, int ncomand
 			free(chain);
 			perror("error file");
 			if (filein >= 0)
-			close(filein);
+				close(filein);
 			return (1);
 		}
 		if ((exec_ft_strncmp(token->inout[i], "< ", 2)) == 0)
@@ -117,7 +123,7 @@ int	handle_redirections(t_shell *shell, t_token *token, int current, int ncomand
 				free(chain);
 				perror("error file");
 				if (fileout > 0)
-				close(fileout);
+					close(fileout);
 				return (1);
 			}
 		}
@@ -168,10 +174,13 @@ int	redirect(t_shell *shell, t_token *token, int current, int ncomands)
 	int	i;
 	int	read_heredoc;
 	int	exit_value;
+	int	current_ncomands[2];
 
 	i = 0;
 	read_heredoc = open_heredocs(token, shell);
-	exit_value = handle_redirections(shell, token, current, ncomands, read_heredoc);
+	current_ncomands[0] = current;
+	current_ncomands[1] = ncomands;
+	exit_value = handle_redirections(shell, token, current_ncomands, read_heredoc);
 	while (i < ncomands - 1)
 	{
 		close(shell->pipes[i][0]);
@@ -196,7 +205,8 @@ void	run(t_shell *shell, char **envp)
 	i = 0;
 	create_pipes(shell->pipes, shell->ncomands, shell);
 	pid_return = forking(shell, envp);
-	free_array(shell->directories);
+	if (shell->directories != NULL)
+		free_array(shell->directories);
 	free_array(envp);
 	while (i < shell->ncomands - 1)
 	{
@@ -229,7 +239,6 @@ void	run(t_shell *shell, char **envp)
 
 void	handle_shell(t_shell *shell)
 {
-
 	shell->envp = exec_convert_env_to_array(shell);
 	if (!shell->envp)
 	{
