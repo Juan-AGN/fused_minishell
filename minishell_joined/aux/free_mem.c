@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 17:08:54 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/18 13:35:17 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/20 16:20:08 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,5 @@ char	*ft_free(char *pointer)
 {
 	free(pointer);
 	pointer = NULL;
-
 	return (NULL);
 }

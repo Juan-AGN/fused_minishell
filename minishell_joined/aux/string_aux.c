@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 10:42:50 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/01/29 16:33:55 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/20 12:47:21 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,6 @@ char	*ft_strndup(const char *s1, int n)
 	if (str == NULL)
 		return (0);
 	ft_strlcpy(str, s1, n + 1);
-	str[n + 1] = '\0';
+	str[n] = '\0';
 	return (str);
 }

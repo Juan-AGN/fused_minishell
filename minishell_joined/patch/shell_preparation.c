@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/29 16:23:02 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/18 19:19:47 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/20 16:16:46 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ char	*ft_get_env(char *str)
 	return (toreturn);
 }
 
-t_shell		*ft_prepare_values(char **envp)
+t_shell	*ft_prepare_values(char **envp)
 {
 	t_shell		*minishell;
 
@@ -111,5 +111,9 @@ t_shell		*ft_prepare_values(char **envp)
 		return (ft_mass_free(minishell, minishell->token,
 				minishell->env, NULL));
 	}
+	minishell->input = NULL;
+	minishell->envp = NULL;
+	minishell->pipes = NULL;
+	minishell->token = NULL;
 	return (minishell);
 }

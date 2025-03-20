@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 13:11:36 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/18 13:35:50 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/20 16:20:36 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,11 @@ void	*ft_error_mini(t_shell *minishell, int err, int ex_cod, int mod)
 		minishell->exit_code = ft_itoa(ex_cod);
 		if (minishell->exit_code == NULL)
 			minishell->error = -5;
-	}	
+	}
 	return (NULL);
 }
 
-int		ft_error_mini_n(t_shell *minishell, int err, int ex_cod, int mod)
+int	ft_error_mini_n(t_shell *minishell, int err, int ex_cod, int mod)
 {
 	if (mod != 1)
 		minishell->error = err;
@@ -48,6 +48,6 @@ int		ft_error_mini_n(t_shell *minishell, int err, int ex_cod, int mod)
 		minishell->exit_code = ft_itoa(ex_cod);
 		if (minishell->exit_code == NULL)
 			minishell->error = -5;
-	}	
+	}
 	return (-1);
 }

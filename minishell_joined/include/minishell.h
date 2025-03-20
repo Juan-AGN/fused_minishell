@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 11:57:54 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/19 19:53:03 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/20 16:23:13 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,14 @@ typedef struct t_token
 t_shell		*ft_prepare_values(char **envp);
 //end start
 
+//signals
+void		ft_signal(void);
+
+void		ft_handler_two(int signal);
+
+void		ft_handler(int signal);
+//end_signals
+
 //list
 int			ft_plstsize(t_env *lst);
 
@@ -80,7 +88,8 @@ char		*ft_plstsearch(t_env *lst, char *name, t_shell *minishell);
 //free n malloc
 void		*ft_safe_malloc(int n, t_shell *minishell);
 
-t_shell		*ft_mass_free(void *value1, void *value2, void *value3, void *value4);
+t_shell		*ft_mass_free(void *value1, void *value2,
+				void *value3, void *value4);
 
 int			ft_plstclear(t_env **lst);
 
@@ -102,27 +111,27 @@ int			ft_specialchar_if(char c);
 //end miscelanious
 
 //token preparation
-int ft_maintoken(t_shell *minishell, char *input);
+int			ft_maintoken(t_shell *minishell, char *input);
 //	aux
-int	ft_comands(char *input);
+int			ft_comands(char *input);
 
-int	ft_return_lenght(char *str);
+int			ft_return_lenght(char *str);
 
-int	ft_count_inout(char *input);
+int			ft_count_inout(char *input);
 
-int	ft_inoutcounter(char *input, char tocount);
+int			ft_inoutcounter(char *input, char tocount);
 
-int	ft_count_token(char *input);
+int			ft_count_token(char *input);
 
-int	ft_specialchar_if(char c);
+int			ft_specialchar_if(char c);
 
-int	ft_spcharparams_if(char c);
+int			ft_spcharparams_if(char c);
 
-int	ft_params(char *input);
+int			ft_params(char *input);
 
-void ft_aux_in(t_shell *minishell, t_token *token, char *input, int i);
+void		ft_aux_in(t_shell *minishell, t_token *token, char *input, int i);
 
-void ft_aux_out(t_shell *minishell, t_token *token, char *input, int i);
+void		ft_aux_out(t_shell *minishell, t_token *token, char *input, int i);
 //	end aux
 //end token preparation
 
@@ -131,31 +140,31 @@ char		*ft_strndup(const char *s1, int n);
 //end string mip and aux functions
 
 //double ""
-char	*ft_handledoubles(t_shell *minishell, char *str, char *tojoin);
+char		*ft_handledoubles(t_shell *minishell, char *str, char *tojoin);
 //end of double ""
 
 //single ''
-char	*ft_handlesingles(t_shell *minishell, char *str);
+char		*ft_handlesingles(t_shell *minishell, char *str);
 //end of single ''
 
 //handle infiles
-char    *ft_handle_inf(t_shell  *minishell, char *input);
+char		*ft_handle_inf(t_shell *minishell, char *input);
 //end handle infiles
 
 //handle infiles
-char    *ft_handle_out(t_shell  *minishell, char *input);
+char		*ft_handle_out(t_shell *minishell, char *input);
 //end handle infiles
 
 //esp envs
-char	*ft_strjoinenv(t_shell *minishell, char *tojoin, char *env);
+char		*ft_strjoinenv(t_shell *minishell, char *tojoin, char *env);
 
-int		ft_return_lenght(char *str);
+int			ft_return_lenght(char *str);
 //end esp envs
 
 //plain text
-char	*ft_handleplain(t_shell *minishell, char *str, char *tojoin);
+char		*ft_handleplain(t_shell *minishell, char *str, char *tojoin);
 //end plain text
 
-void    handle_shell(t_shell *shell);
+void		handle_shell(t_shell *shell);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/27 13:56:43 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/12 14:33:38 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/20 16:16:31 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ t_env	*ft_lstadvance(t_env *lst, int i)
 	return (lst);
 }
 
-char	*ft_plstsearch(t_env *lst, char *name,  t_shell *minishell)
+char	*ft_plstsearch(t_env *lst, char *name, t_shell *minishell)
 {
 	if (lst == NULL)
 		return ("");
