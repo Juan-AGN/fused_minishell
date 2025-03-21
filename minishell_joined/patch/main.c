@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:16:58 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/21 14:03:45 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/21 14:07:44 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,14 @@ void	ft_error_no_command(t_shell *minishell)
 {
 	if (minishell->error == -5 || minishell->token == NULL
 		|| minishell->ncomands != 1)
-			return ;
+		return ;
 	if (minishell->token->command == NULL)
 		return ;
 	if (minishell->token->command[0] == '\0'
 		&& minishell->token->infiles == NULL
-			&& minishell->token->infiles == NULL
-				&& minishell->token->params == NULL)
-				ft_error_mini(minishell, 5, 0, 0);
+		&& minishell->token->infiles == NULL
+		&& minishell->token->params == NULL)
+		ft_error_mini(minishell, 5, 0, 0);
 }
 
 void	ft_errors(t_shell *minishell)
