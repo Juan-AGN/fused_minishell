@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 15:31:51 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/21 14:08:05 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/21 18:41:23 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,6 @@ void	ft_handler(int signal)
 		rl_on_new_line();
 		rl_redisplay();
 	}
-	else if (signal == SIGQUIT)
-	{
-		rl_on_new_line();
-		rl_replace_line("  ", 0);
-		rl_redisplay();
-	}
 }
 
 void	ft_handler_two(int signal)
@@ -38,21 +32,17 @@ void	ft_handler_two(int signal)
 	{
 		printf("\n");
 	}
-	else if (signal == SIGQUIT)
-	{
-		printf("\n");
-	}
+}
+
+void	sigquit_handler(int signal)
+{
+	signal = 0;
 }
 
 void	ft_signal(void)
 {
-	struct sigaction	signal;
-
-	signal.sa_handler = &ft_handler;
-	signal.sa_flags = SA_RESTART;
-	sigemptyset(&signal.sa_mask);
-	sigaction(SIGINT, &signal, NULL);
-	sigaction(SIGQUIT, &signal, NULL);
+	signal(SIGINT, &ft_handler);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 void	ft_disable_signal(void)
@@ -60,5 +50,5 @@ void	ft_disable_signal(void)
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, &ft_handler_two);
-	signal(SIGQUIT, &ft_handler_two);
+	signal(SIGQUIT, &sigquit_handler);
 }

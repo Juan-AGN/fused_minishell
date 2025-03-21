@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 11:57:54 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/21 13:45:16 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:53:56 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <signal.h>
+# include <termios.h>
 
 typedef struct t_shell
 {
@@ -56,8 +57,6 @@ typedef struct t_token
 	char			**outfiles;
 	char			**inout;
 }	t_token;
-
-#define signal_rec = 0;
 
 //start
 t_shell		*ft_prepare_values(char **envp);
