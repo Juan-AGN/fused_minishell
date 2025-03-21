@@ -25,6 +25,19 @@ char	*get_env_value(t_env *env, const char *varname)
 	return (NULL);
 }
 
+t_env	*retorno(t_shell *shell)
+{
+	t_env	*new_node;
+
+	new_node = (t_env *)malloc(sizeof(t_env));
+	if (!new_node)
+	{
+		perror("update_env");
+		builtin_exit(NULL, shell, -1);
+	}
+	return (new_node);
+}
+
 /* Actualizar (o crear) una variable en t_env */
 void	update_env(t_env **env, const char *varname, const char *new_content, t_shell *shell)
 {
@@ -48,16 +61,20 @@ void	update_env(t_env **env, const char *varname, const char *new_content, t_she
 		}
 		tmp = tmp->next;
 	}
-	new_node = (t_env *)malloc(sizeof(t_env));
-	if (!new_node)
-	{
-		perror("update_env");
-		builtin_exit(NULL, shell, -1);
-	}
+	new_node = retorno(shell);
 	new_node->name = ft_sstrdup(varname);
 	new_node->content = ft_sstrdup(new_content);
 	new_node->next = *env;
 	*env = new_node;
+}
+
+void	chck_enpanded(char *expanded, t_shell *shell)
+{
+	if (!expanded)
+	{
+		perror("cd");
+		builtin_exit(NULL, shell, -1);
+	}
 }
 
 /* Expandir la tilde ('~') usando el valor de "HOME" */
@@ -79,11 +96,7 @@ static char	*expand_tilde(const char *arg, t_env *env, t_shell *shell)
 	{
 		len = exec_ft_strlen(home) + exec_ft_strlen(arg + 1) + 1;
 		expanded = malloc(len);
-		if (!expanded)
-		{
-			perror("cd");
-			builtin_exit(NULL, shell, -1);
-		}
+		chck_enpanded(expanded, shell);
 		exec_ft_cpy(expanded, home, len);
 		exec_ft_strlcat(expanded, arg + 1, len);
 		return (expanded);

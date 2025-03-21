@@ -6,39 +6,47 @@
 /*   By: luialvar <luialvar@student.42malaga.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 11:18:11 by luialvar          #+#    #+#             */
-/*   Updated: 2025/03/13 11:18:13 by luialvar         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:10:16 by luialvar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "exteroided.h"
 
-void	loop_converting(int count, t_env *tmp, char	**envp, t_shell *shell)
+void	do_concat(char **envp, t_env *tmp, size_t len, int *i)
+{
+	exec_ft_strlcat(envp[*i], tmp->name, len);
+	exec_ft_strlcat(envp[*i], "=", len);
+	exec_ft_strlcat(envp[*i], tmp->content, len);
+	(*i)++;
+}
+
+void	loop_converting(t_env *tmp, char **envp, t_shell *shell)
 {
 	size_t	len;
 	int		j;
 	int		i;
 
 	i = 0;
-	while (i < count)
+	while (tmp)
 	{
-		len = exec_ft_strlen(tmp->name) + exec_ft_strlen(tmp->content) + 2;
-		envp[i] = (char *)malloc(len);
-		if (!envp[i])
+		if (tmp->content[0] != '\0')
 		{
-			j = i;
-			while (--j >= 0)
-				free(envp[j]);
-			free(envp);
-			builtin_exit(NULL, shell, -1);
+			len = exec_ft_strlen(tmp->name) + exec_ft_strlen(tmp->content) + 2;
+			envp[i] = (char *)malloc(len);
+			if (!envp[i])
+			{
+				j = i;
+				while (--j >= 0)
+					free(envp[j]);
+				free(envp);
+				builtin_exit(NULL, shell, -1);
+			}
+			envp[i][0] = '\0';
+			do_concat(envp, tmp, len, &i);
 		}
-		envp[i][0] = '\0';
-		exec_ft_strlcat(envp[i], tmp->name, len);
-		exec_ft_strlcat(envp[i], "=", len);
-		exec_ft_strlcat(envp[i], tmp->content, len);
 		tmp = tmp->next;
-		i++;
 	}
-	envp[count] = NULL;
+	envp[i] = NULL;
 }
 
 char	**exec_convert_env_to_array(t_shell *shell)
@@ -51,7 +59,8 @@ char	**exec_convert_env_to_array(t_shell *shell)
 	count = 0;
 	while (tmp)
 	{
-		count++;
+		if (tmp->content[0] != '\0')
+			count++;
 		tmp = tmp->next;
 	}
 	envp = (char **)malloc(sizeof(char *) * (count + 1));
@@ -61,7 +70,7 @@ char	**exec_convert_env_to_array(t_shell *shell)
 		builtin_exit(NULL, shell, -1);
 	}
 	tmp = *(shell->env);
-	loop_converting(count, tmp, envp, shell);
+	loop_converting(tmp, envp, shell);
 	return (envp);
 }
 
@@ -94,6 +103,20 @@ void	create_pipes(int pipes[][2], int ncom, t_shell *shell)
 	}
 }
 
+void	do_token_func(const t_token *token, size_t *total_length)
+{
+	int	i;
+
+	i = 0;
+	while (i < token->nparams)
+	{
+		*total_length += 1;
+		*total_length += exec_ft_strlen(token->params[i]);
+		i++;
+	}
+	*total_length += 1;
+}
+
 char	*token_to_str(const t_token *token, t_shell *shell)
 {
 	size_t	total_length;
@@ -104,13 +127,7 @@ char	*token_to_str(const t_token *token, t_shell *shell)
 		return (NULL);
 	total_length = exec_ft_strlen(token->command);
 	i = 0;
-	while (i < token->nparams)
-	{
-		total_length += 1;
-		total_length += exec_ft_strlen(token->params[i]);
-		i++;
-	}
-	total_length += 1;
+	do_token_func(token, &total_length);
 	result = (char *)malloc(total_length);
 	if (!result)
 	{
@@ -226,21 +243,40 @@ t_ret	forking(t_shell *shell, char **envp)
 	return (pid_return);
 }
 
-void	try(char *full_path, char **commands, t_shell *shell, char **envp)
+int	has_slash(char *str)
+{
+	while (*str)
+	{
+		if (*str == '/')
+			return (1);
+		str++;
+	}
+	return (0);
+}
+
+void	checkdirect(char *cmd, char *full_path, char **commands, t_shell *shell)
 {
 	struct stat	st;
 
-	if (stat(commands[0], &st) == 0)
+	if (stat(cmd, &st) == 0)
 	{
 		if (S_ISDIR(st.st_mode))
 		{
-			write(STDERR_FILENO, commands[0], exec_ft_strlen(commands[0]));
+			write(STDERR_FILENO, cmd, exec_ft_strlen(cmd));
 			write(STDERR_FILENO, ": Is a directory\n", 17);
 			free(full_path);
 			free_array(commands);
 			builtin_exit(NULL, shell, 126);
 		}
 	}
+}
+
+void	try(char *full_path, char **commands, t_shell *shell, char **envp)
+{
+	struct stat	st;
+
+	if (has_slash(commands[0]))
+		checkdirect(commands[0], full_path, commands, shell);
 	if (stat(full_path, &st) == 0)
 	{
 		if (st.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH))
@@ -289,7 +325,7 @@ void	execute(char *command, char **directories, char **envp, t_shell *shell)
 	i = 0;
 	while (directories[i] != NULL)
 	{
-		full_path = build_full_path(directories[i], params[0]);
+		full_path = build_path(directories[i], params[0], shell);
 		if (!full_path)
 		{
 			free_array(params);
@@ -332,11 +368,36 @@ char	**find_directories(char **envp, t_shell *shell)
 	return (NULL);
 }
 
-char	*build_full_path(const char *directory, const char *command)
+char	*check_relative(const char *command, t_shell *shell)
 {
 	size_t	total_size;
 	char	*full_path;
 	char	*cwd;
+
+	cwd = getcwd(NULL, 0);
+	if (!cwd)
+	{
+		perror("getcwd");
+		builtin_exit(NULL, shell, -1);
+	}
+	total_size = exec_ft_strlen(cwd) + exec_ft_strlen(command) + 2;
+	full_path = malloc(total_size);
+	if (!full_path)
+	{
+		free(cwd);
+		builtin_exit(NULL, shell, -1);
+	}
+	exec_ft_cpy(full_path, cwd, total_size);
+	exec_ft_strlcat(full_path, "/", total_size);
+	exec_ft_strlcat(full_path, command, total_size);
+	free(cwd);
+	return (full_path);
+}
+
+char	*build_path(const char *directory, const char *command, t_shell *shell)
+{
+	size_t	total_size;
+	char	*full_path;
 
 	if (command[0] == '/')
 	{
@@ -347,26 +408,7 @@ char	*build_full_path(const char *directory, const char *command)
 		return (full_path);
 	}
 	if (command[0] == '.' && (command[1] == '/' || command[1] == '.'))
-	{
-		cwd = getcwd(NULL, 0);
-		if (!cwd)
-		{
-			perror("getcwd");
-			return (NULL);
-		}
-		total_size = exec_ft_strlen(cwd) + exec_ft_strlen(command) + 2;
-		full_path = malloc(total_size);
-		if (!full_path)
-		{
-			free(cwd);
-			return (NULL);
-		}
-		exec_ft_cpy(full_path, cwd, total_size);
-		exec_ft_strlcat(full_path, "/", total_size);
-		exec_ft_strlcat(full_path, command, total_size);
-		free(cwd);
-		return (full_path);
-	}
+		return (check_relative(command, shell));
 	total_size = exec_ft_strlen(directory) + exec_ft_strlen(command) + 2;
 	full_path = malloc(total_size);
 	if (!full_path)

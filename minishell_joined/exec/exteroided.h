@@ -32,6 +32,15 @@ typedef struct t_ret
 	int			use_pid;
 }	t_ret;
 
+//signals
+void		ft_signal(void);
+
+void		ft_handler_two(int signal);
+
+void		ft_handler(int signal);
+
+void		ft_disable_signal();
+//end_signals
 void	handle_shell(t_shell *shell);
 size_t	exec_ft_strlen(const char *s);
 size_t	exec_ft_strlcat(char *dst, const char *src, size_t size);
@@ -44,7 +53,7 @@ int		returning(int ncom, pid_t pid, t_shell *shell);
 char	**find_directories(char **envp, t_shell *shell);
 int		redirect(t_shell *shell, t_token *token, int current, int ncomands);
 void	execute(char *command, char **directories, char **envp, t_shell *shell);
-char	*build_full_path(const char *directory, const char *command);
+char	*build_path(const char *directory, const char *command, t_shell *shell);
 size_t	exec_ft_cpy(char *restrict dst, const char *restrict src, size_t size);
 int		exec_ft_strncmp(const char *s1, const char *s2, size_t n);
 void	*exec_ft_memcpy(void *dest, const void *src, size_t n);

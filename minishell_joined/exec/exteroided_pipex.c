@@ -61,7 +61,9 @@ void	process_heredoc_entry(char *entry, int *pipe_fd, t_shell *shell)
 			free(chain);
 			builtin_exit(NULL, shell, -1);
 		}
+		signal(SIGINT, SIG_DFL);
 		here_doc_child(chain, pipe_fd[1]);
+		ft_disable_signal();
 		close(pipe_fd[1]);
 		free(chain);
 	}

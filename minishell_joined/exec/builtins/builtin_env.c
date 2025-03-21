@@ -14,15 +14,20 @@
 
 int	builtin_env(int nparams, char **envp)
 {
-	int	i;
+	int		i;
+	char	*equal_sign;
 
-	i = 0;
 	if (nparams != 0)
 		return (127);
+	i = 0;
 	while (envp[i])
 	{
-		write(1, envp[i], ft_strrlen(envp[i]));
-		write(1, "\n", 1);
+		equal_sign = ft_sstrchr(envp[i], '=');
+		if (equal_sign)
+		{
+			write(1, envp[i], ft_strrlen(envp[i]));
+			write(1, "\n", 1);
+		}
 		i++;
 	}
 	return (0);

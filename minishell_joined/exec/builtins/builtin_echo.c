@@ -17,10 +17,7 @@ void	other_echo(t_token *command, int *i, int *newline)
 	int	j;
 
 	if (command->nparams == 0)
-	{
-		write(1, "\n", 1);
 		return ;
-	}
 	while (*i < command->nparams && command->params[*i][0] == '-')
 	{
 		j = 1;

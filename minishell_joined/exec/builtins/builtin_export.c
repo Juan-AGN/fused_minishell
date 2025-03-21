@@ -88,28 +88,78 @@ void	add_to_env(char *key, char *value, t_env **env, t_shell *shell)
 	}
 }
 
+static t_env	*search_env(t_env *env, char *key)
+{
+	while (env)
+	{
+		if (ft_strrncmp(env->name, key, ft_strrlen(key)) == 0
+			&& ft_strrlen(env->name) == ft_strrlen(key))
+			return (env);
+		env = env->next;
+	}
+	return (NULL);
+}
+
+char	*first_exp_lo(char *equal_sign, t_token *command, int i, t_shell *shell)
+{
+	char	*original;
+
+	equal_sign = ft_sstrchr(command->params[i], '=');
+	original = ft_sstrdup(command->params[i]);
+	if (!original)
+	{
+		perror("strdup");
+		builtin_exit(NULL, shell, -1);
+	}
+	if (equal_sign)
+		*equal_sign = '\0';
+	return (original);
+}
+
+void	final_exp_lo(char *equal_sign, char	*original, int *i)
+{
+	if (equal_sign)
+		*equal_sign = '=';
+	free(original);
+	(*i)++;
+}
+
+void	secondexplo(t_token *command, int i, char *original, int *return_value)
+{
+	if (!is_valid_identifier(command->params[i]))
+	{
+		write(STDERR_FILENO, "bash: export: `", 15);
+		write(STDERR_FILENO, original, exec_ft_strlen(original));
+		write(STDERR_FILENO, "': not a valid identifier\n", 26);
+		*return_value = 1;
+	}
+}
+
 void	exp_lo(t_token *command, int *return_value, t_env **env, t_shell *shell)
 {
 	int		i;
 	char	*equal_sign;
+	char	*original;
+	t_env	*found;
 
 	i = 0;
+	equal_sign = NULL;
 	while (i < command->nparams)
 	{
-		equal_sign = ft_sstrchr(command->params[i], '=');
-		if (equal_sign)
+		original = first_exp_lo(equal_sign, command, i, shell);
+		secondexplo(command, i, original, return_value);
+		if (is_valid_identifier(command->params[i]))
 		{
-			*equal_sign = '\0';
-			if (is_valid_identifier(command->params[i]))
-				add_to_env(command->params[i], equal_sign + 1, env, shell);
-			else
+			if (!equal_sign)
 			{
-				printf("export: `%s': no valid identify\n", command->params[i]);
-				*return_value = 1;
+				found = search_env(*env, command->params[i]);
+				if (!found)
+					add_to_env(command->params[i], "", env, shell);
 			}
-			*equal_sign = '=';
+			else
+				add_to_env(command->params[i], equal_sign + 1, env, shell);
 		}
-		i++;
+		final_exp_lo(equal_sign, original, &i);
 	}
 }
 
