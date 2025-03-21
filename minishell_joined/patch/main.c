@@ -6,22 +6,40 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 16:16:58 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/20 16:19:28 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/21 14:03:45 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int	ft_search_space(char *str)
+void	ft_error_no_command(t_shell *minishell)
 {
-	while (*str)
+	if (minishell->error == -5 || minishell->token == NULL
+		|| minishell->ncomands != 1)
+			return ;
+	if (minishell->token->command == NULL)
+		return ;
+	if (minishell->token->command[0] == '\0'
+		&& minishell->token->infiles == NULL
+			&& minishell->token->infiles == NULL
+				&& minishell->token->params == NULL)
+				ft_error_mini(minishell, 5, 0, 0);
+}
+
+void	ft_errors(t_shell *minishell)
+{
+	if (minishell->error == -5)
 	{
-		if (*str <= 32 && *str >= 1)
-			str ++;
-		else
-			return (0);
+		ft_free_for_exit(minishell);
+		ft_printf("Malloc error\n");
+		exit(-1);
 	}
-	return (1);
+	if (minishell->error != 0)
+	{
+		if (minishell->error != 5)
+			ft_printf("Quote error\n");
+		minishell->error = 0;
+	}
 }
 
 int	ft_cwd(t_shell *minishell)
@@ -57,27 +75,12 @@ void	ft_handle_input(t_shell *minishell)
 	else
 		printf("");
 	ret = ft_maintoken(minishell, minishell->input);
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
-	signal(SIGINT, &ft_handler_two);
-	signal(SIGQUIT, &ft_handler_two);
+	if (ret == 0)
+		ft_error_no_command(minishell);
+	ft_disable_signal();
 	if (minishell->input != NULL && ret == 0 && minishell->error == 0)
 		handle_shell(minishell);
-	if (minishell->error == -5)
-	{
-		ft_free_for_exit(minishell);
-		ft_printf("Malloc error\n");
-		exit(-1);
-	}
-	if (minishell->error != 0)
-	{
-		ft_printf("Quote error\n");
-		minishell->error = 0;
-	}
-}
-
-void	ft_free_for_cwd(t_shell *minishell)
-{
+	ft_errors(minishell);
 	ft_free_tokens(minishell, minishell->token);
 	free(minishell->input);
 	minishell->input = NULL;
@@ -106,6 +109,5 @@ int	main(int argc, char **argv, char **envp)
 			exit(0);
 		}
 		ft_handle_input(minishell);
-		ft_free_for_cwd(minishell);
 	}
 }

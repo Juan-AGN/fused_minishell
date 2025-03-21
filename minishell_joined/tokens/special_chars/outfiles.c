@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 18:04:24 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/18 19:15:25 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/21 13:21:12 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,15 @@ char	*ft_handle_out(t_shell *minishell, char *input)
 	while (*input >= 1 && *input <= 32)
 		input ++;
 	if (type == 1 && *input != '>' && *input != '|' && *input != '<'
-		&& *input != '\0')
+		&& *input != '\0' && ft_params(input) != 0)
 	{
 		return (ft_handleplain(minishell, input, ">  "));
 	}
 	else if (type == 2 && *input != '>' && *input != '|' && *input != '<'
-		&& *input != '\0')
+		&& *input != '\0' && ft_params(input) != 0)
 	{
 		return (ft_handleplain(minishell, input, ">> "));
 	}
 	else
-		return (NULL);
+		return (ft_error_mini(minishell, -1, 139, 0));
 }

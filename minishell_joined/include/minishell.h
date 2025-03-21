@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 11:57:54 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/20 16:23:13 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/21 13:45:16 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ typedef struct t_token
 	char			**inout;
 }	t_token;
 
+#define signal_rec = 0;
+
 //start
 t_shell		*ft_prepare_values(char **envp);
 //end start
@@ -67,6 +69,8 @@ void		ft_signal(void);
 void		ft_handler_two(int signal);
 
 void		ft_handler(int signal);
+
+void		ft_disable_signal();
 //end_signals
 
 //list
@@ -106,6 +110,8 @@ void		ft_free_for_exit(t_shell *minishell);
 
 //miscelanious
 char		*ft_get_env(char *str);
+
+int			ft_search_space(char *str);
 
 int			ft_specialchar_if(char c);
 //end miscelanious

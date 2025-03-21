@@ -6,7 +6,7 @@
 /*   By: juan-ant <juan-ant@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 15:31:51 by juan-ant          #+#    #+#             */
-/*   Updated: 2025/03/20 15:33:57 by juan-ant         ###   ########.fr       */
+/*   Updated: 2025/03/21 13:44:58 by juan-ant         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,12 @@ void	ft_signal(void)
 	sigemptyset(&signal.sa_mask);
 	sigaction(SIGINT, &signal, NULL);
 	sigaction(SIGQUIT, &signal, NULL);
+}
+
+void	ft_disable_signal()
+{
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, &ft_handler_two);
+	signal(SIGQUIT, &ft_handler_two);
 }
