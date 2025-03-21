@@ -59,3 +59,18 @@ void	*ft_mmemset(void *s, int c, size_t len)
 	}
 	return (s);
 }
+
+/* Verificar si un identificador es válido */
+int	is_valid_identifier(const char *str)
+{
+	if (!str || *str == '\0' || !(ft_iisalpha(*str) || *str == '_'))
+		return (0);
+	str++;
+	while (*str)
+	{
+		if (!(ft_iisalnum(*str) || *str == '_'))
+			return (0);
+		str++;
+	}
+	return (1);
+}

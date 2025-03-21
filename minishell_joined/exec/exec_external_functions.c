@@ -161,7 +161,10 @@ t_ret	forking(t_shell *shell, char **envp)
 			pid_return.use_pid = 2;
 			return (pid_return);
 		}
-		if (exec_ft_strncmp(shell->token[0].command, "exit", 4) == 0)
+		if (exec_ft_strncmp(shell->token[0].command, "exit", 4) == 0
+			&& (shell->token[0].nparams == 0
+				|| !is_numeric(shell->token[0].params[0])
+				|| (shell->token[0].nparams == 1)))
 		{
 			close(saved_stdin);
 			close(saved_stdout);

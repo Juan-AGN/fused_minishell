@@ -12,34 +12,8 @@
 
 #include "builtins.h"
 
-/* Verificar si un identificador es válido */
-int	is_valid_identifier(const char *str)
+int	loop_add_env(t_env	*current, char *key, char *value, t_shell *shell)
 {
-	if (!str || *str == '\0' || !(ft_iisalpha(*str) || *str == '_'))
-		return (0);
-	str++;
-	while (*str)
-	{
-		if (!(ft_iisalnum(*str) || *str == '_'))
-			return (0);
-		str++;
-	}
-	return (1);
-}
-
-/* Añadir o reemplazar variables en t_env */
-void	add_to_env(char *key, char *value, t_env **env, t_shell *shell)
-{
-	t_env	*current;
-	t_env	*new_node;
-	t_env	*last;
-
-	if (!key || !value || !env)
-	{
-		write(2, "Error: Argumentos invalidos en add_to_env\n", 44);
-		return ;
-	}
-	current = *env;
 	while (current != NULL)
 	{
 		if (ft_strrncmp(current->name, key, ft_strrlen(key)) == 0
@@ -52,10 +26,17 @@ void	add_to_env(char *key, char *value, t_env **env, t_shell *shell)
 				perror("strdup");
 				builtin_exit(NULL, shell, -1);
 			}
-			return ;
+			return (1);
 		}
 		current = current->next;
 	}
+	return (0);
+}
+
+t_env	*more_to_env(t_shell *shell, char *key, char *value)
+{
+	t_env	*new_node;
+
 	new_node = malloc(sizeof(t_env));
 	if (!new_node)
 	{
@@ -75,6 +56,27 @@ void	add_to_env(char *key, char *value, t_env **env, t_shell *shell)
 		builtin_exit(NULL, shell, -1);
 	}
 	new_node->next = NULL;
+	return (new_node);
+}
+
+/* Añadir o reemplazar variables en t_env */
+void	add_to_env(char *key, char *value, t_env **env, t_shell *shell)
+{
+	t_env	*current;
+	t_env	*new_node;
+	t_env	*last;
+	int		found;
+
+	if (!key || !value || !env)
+	{
+		write(2, "Error: Argumentos invalidos en add_to_env\n", 44);
+		return ;
+	}
+	current = *env;
+	found = loop_add_env(current, key, value, shell);
+	if (found)
+		return ;
+	new_node = more_to_env(shell, key, value);
 	if (*env == NULL)
 		*env = new_node;
 	else
@@ -86,11 +88,34 @@ void	add_to_env(char *key, char *value, t_env **env, t_shell *shell)
 	}
 }
 
-/* Implementación del comando export */
-int	builtin_export(t_token *command, t_env **env, t_shell *shell)
+void	exp_lo(t_token *command, int *return_value, t_env **env, t_shell *shell)
 {
 	int		i;
 	char	*equal_sign;
+
+	i = 0;
+	while (i < command->nparams)
+	{
+		equal_sign = ft_sstrchr(command->params[i], '=');
+		if (equal_sign)
+		{
+			*equal_sign = '\0';
+			if (is_valid_identifier(command->params[i]))
+				add_to_env(command->params[i], equal_sign + 1, env, shell);
+			else
+			{
+				printf("export: `%s': no valid identify\n", command->params[i]);
+				*return_value = 1;
+			}
+			*equal_sign = '=';
+		}
+		i++;
+	}
+}
+
+/* Implementación del comando export */
+int	builtin_export(t_token *command, t_env **env, t_shell *shell)
+{
 	int		return_value;
 	t_env	*current;
 
@@ -105,23 +130,6 @@ int	builtin_export(t_token *command, t_env **env, t_shell *shell)
 		}
 		return (0);
 	}
-	i = 0;
-	while (i < command->nparams)
-	{
-		equal_sign = ft_sstrchr(command->params[i], '=');
-		if (equal_sign)
-		{
-			*equal_sign = '\0';
-			if (is_valid_identifier(command->params[i]))
-				add_to_env(command->params[i], equal_sign + 1, env, shell);
-			else
-			{
-				printf("export: `%s': no valid identify\n", command->params[i]);
-				return_value = 1;
-			}
-			*equal_sign = '=';
-		}
-		i++;
-	}
+	exp_lo(command, &return_value, env, shell);
 	return (return_value);
 }

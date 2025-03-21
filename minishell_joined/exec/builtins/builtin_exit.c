@@ -47,7 +47,7 @@ void	additional_exit(char **args, t_shell *shell, int *exit_code)
 }
 
 // Implementación del builtin exit
-int	builtin_exit(char **args, t_shell *shell, int checker)
+int	builtin_exit(t_token *command, t_shell *shell, int checker)
 {
 	int	exit_code;
 
@@ -56,8 +56,8 @@ int	builtin_exit(char **args, t_shell *shell, int checker)
 	{
 		if (isatty(STDOUT_FILENO))
 			write(STDOUT_FILENO, "exit\n", 5);
-		additional_exit(args, shell, &exit_code);
-		if (args[1])
+		additional_exit(command->params, shell, &exit_code);
+		if (command->nparams > 1)
 		{
 			write(STDERR_FILENO, "minishell: exit: too many arguments\n", 36);
 			return (1);

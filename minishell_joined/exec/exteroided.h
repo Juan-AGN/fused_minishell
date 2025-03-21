@@ -59,5 +59,6 @@ int		is_builtin(char *builtin);
 int		exe_builtin(t_token *command, char **envp, t_env **env, t_shell *shell);
 void	ft_free_for_exit(t_shell *minishell);
 void	exec_free_all(t_shell *shell);
+int		is_numeric(const char *str);
 
 #endif
