@@ -115,5 +115,6 @@ t_shell	*ft_prepare_values(char **envp)
 	minishell->envp = NULL;
 	minishell->pipes = NULL;
 	minishell->token = NULL;
+	minishell->cd_checker = -1;
 	return (minishell);
 }

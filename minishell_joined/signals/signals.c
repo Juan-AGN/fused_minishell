@@ -34,9 +34,9 @@ void	ft_handler_two(int signal)
 	}
 }
 
-void	sigquit_handler(int signal)
+void	sigquit_handler(/*int signal*/)
 {
-	signal = 0;
+	//signal = 0;
 }
 
 void	ft_signal(void)

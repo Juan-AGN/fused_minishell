@@ -32,6 +32,7 @@ typedef struct t_shell
 	char			**envp;
 	char			**directories;
 	int				(*pipes)[2];
+	int				cd_checker;
 }	t_shell;
 
 typedef struct t_env
@@ -77,10 +78,41 @@ void	ft_bbzero(void *s, size_t n);
 void	*ft_mmemset(void *s, int c, size_t len);
 void	ft_free_for_exit(t_shell *minishell);
 void	exec_free_all(t_shell *shell);
-int		exec_ft_strncmp(const char *s1, const char *s2, size_t n);
+int		e_ft_strncmp(const char *s1, const char *s2, size_t n);
 size_t	exec_ft_strlen(const char *s);
 size_t	exec_ft_cpy(char *restrict dst, const char *restrict src, size_t size);
 size_t	exec_ft_strlcat(char *dst, const char *src, size_t size);
 int		is_valid_identifier(const char *str);
+int		loop_add_env(t_env	*current, char *key, char *value, t_shell *shell);
+t_env	*more_to_env(t_shell *shell, char *key, char *value);
+void	add_to_env(char *key, char *value, t_env **env, t_shell *shell);
+t_env	*search_env(t_env *env, char *key);
+size_t	e(const char *s);
+char	*get_env_value(t_env *env, const char *varname);
+t_env	*retorno(t_shell *shell);
+void	update_e(t_env **env, char *varname, char *new_content, t_shell *shell);
+void	chck_enpanded(char *expanded, t_shell *shell);
+char	*check_home(t_env *env);
+char	*expand_tilde(const char *arg, t_env *env, t_shell *shell);
+int		update_pwd_oldpwd(t_env **env, char *oldpwd, t_shell *shell);
+char	*handle_cd_minus(t_env *env);
+void	first_cd(char **path, t_env **env, char *oldpwd, t_shell *shell);
+void	second_cd(char *oldpwd, t_shell *shell);
+void	thrid_cd(char **path, t_env **env, char *oldpwd, t_shell *shell);
+int		change_dir(char *path, char *oldpwd, char *expanded, t_shell *shell);
+void	final_cd(t_env **env, char *oldpwd, t_shell *shell, char *expanded);
+void	check_expand(char *expanded, char *oldpwd, char **path, t_shell *shell);
+int		f(const char *s1, const char *s2, size_t n);
+void	check_old(char *oldpwd, t_shell *shell);
+void	do_concat(char **envp, t_env *tmp, size_t len, int *i);
+void	loop_converting(t_env *tmp, char **envp, t_shell *shell);
+char	**exec_convert_env_to_array(t_shell *shell);
+void	exec_free_array(char **directories);
+void	create_pipes(int pipes[][2], int ncom, t_shell *shell);
+void	do_token_func(const t_token *token, size_t *total_length);
+char	*token_to_str(const t_token *token, t_shell *shell);
+int		has_slash(char *str);
+void	checkdirec(char *cmd, char *full_path, char **commands, t_shell *shell);
+void	try(char *full_path, char **commands, t_shell *shell, char **envp);
 
 #endif

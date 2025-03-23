@@ -62,7 +62,7 @@ size_t	exec_ft_cpy(char *restrict dst, const char *restrict src, size_t size)
 	return (len);
 }
 
-int	exec_ft_strncmp(const char *s1, const char *s2, size_t n)
+int	e_ft_strncmp(const char *s1, const char *s2, size_t n)
 {
 	size_t	i;
 

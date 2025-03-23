@@ -62,3 +62,15 @@ int	ft_iisalnum(int c)
 		return (0);
 	}
 }
+
+size_t	e(const char *s)
+{
+	size_t	i;
+
+	i = 0;
+	while (s[i] != '\0')
+	{
+		i++;
+	}
+	return (i);
+}

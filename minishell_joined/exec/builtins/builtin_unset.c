@@ -12,11 +12,14 @@
 
 #include "builtins.h"
 
-void	free_and_return_remove(t_env	*current)
+void	free_and_return_remove(t_env **current)
 {
-	free(current->name);
-	free(current->content);
-	free(current);
+	if (current && *current)
+	{
+		free((*current)->name);
+		free((*current)->content);
+		free(*current);
+	}
 	return ;
 }
 
@@ -36,13 +39,13 @@ void	remove_from_env(char *key, t_env **env)
 	{
 		name_len = exec_ft_strlen(current->name);
 		if (key_len == name_len
-			&& exec_ft_strncmp(current->name, key, key_len) == 0)
+			&& e_ft_strncmp(current->name, key, key_len) == 0)
 		{
 			if (prev)
 				prev->next = current->next;
 			else
 				*env = current->next;
-			free_and_return_remove(current);
+			return (free_and_return_remove(&current));
 		}
 		prev = current;
 		current = current->next;

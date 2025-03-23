@@ -33,13 +33,10 @@ typedef struct t_ret
 }	t_ret;
 
 //signals
-void		ft_signal(void);
-
-void		ft_handler_two(int signal);
-
-void		ft_handler(int signal);
-
-void		ft_disable_signal();
+void	ft_signal(void);
+void	ft_handler_two(int signal);
+void	ft_handler(int signal);
+void	ft_disable_signal(void);
 //end_signals
 void	handle_shell(t_shell *shell);
 size_t	exec_ft_strlen(const char *s);
@@ -55,7 +52,7 @@ int		redirect(t_shell *shell, t_token *token, int current, int ncomands);
 void	execute(char *command, char **directories, char **envp, t_shell *shell);
 char	*build_path(const char *directory, const char *command, t_shell *shell);
 size_t	exec_ft_cpy(char *restrict dst, const char *restrict src, size_t size);
-int		exec_ft_strncmp(const char *s1, const char *s2, size_t n);
+int		e_ft_strncmp(const char *s1, const char *s2, size_t n);
 void	*exec_ft_memcpy(void *dest, const void *src, size_t n);
 void	here_doc_child(char *limiter, int fd);
 char	*exec_ft_substr(char const *s, unsigned int start, size_t len);
@@ -69,5 +66,13 @@ int		exe_builtin(t_token *command, char **envp, t_env **env, t_shell *shell);
 void	ft_free_for_exit(t_shell *minishell);
 void	exec_free_all(t_shell *shell);
 int		is_numeric(const char *str);
+void	process_heredoc_entry(char *entry, int *pipe_fd, t_shell *shell);
+int		open_heredocs(t_token *token, t_shell *shell);
+void	first_han(t_token *token, int current_ncomands[2], t_shell *shell);
+void	inside_loop(char **chain, int i, t_token *token, int *fileout);
+int		check_han(int *fileout, char **chain, int *filein);
+int		loop_han(char **chain, t_token *token, int *fileout, int *filein);
+void	second_han(int real, t_token *token, t_shell *shell, int *filein);
+int		han_red(t_shell *shell, t_token *token, int current_ncoma[2], int real);
 
 #endif

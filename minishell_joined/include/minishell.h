@@ -36,6 +36,7 @@ typedef struct t_shell
 	char			**envp;
 	char			**directories;
 	int				(*pipes)[2];
+	int				cd_checker;
 }	t_shell;
 
 typedef struct t_env
